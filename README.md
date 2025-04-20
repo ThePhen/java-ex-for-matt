@@ -1,4 +1,4 @@
-# Example of containerization of a Java8 AWT app.
+# Example of containerization of a Java8 AWT app
 
 * Java 8 with AWT UI, augmented to have a CLI (ideally headless) mode. Uses hard coded ideas about finding some configuration from a %USER_HOME%\SETTINGS.ini file.
 * Docker container, passes in 'jab specific config' as environment variable and tackles the legacy Java app's need to display an AWT UI, even though that UI is never interacted with my users (when invoked via CLI args).

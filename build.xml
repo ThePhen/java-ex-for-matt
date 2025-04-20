@@ -1,0 +1,29 @@
+<project name = "java-ex-for-matt" default = "dist" basedir = ".">
+
+    <!-- set global properties for this build -->
+    <property name = "src" location = "src/main"/>
+    <property name = "build" location = "target/classes"/>
+    <property name = "dist" location = "target"/>
+
+    <target name = "init">
+        <tstamp/>
+        <mkdir dir = "${build}"/>
+    </target>
+
+    <target name = "compile" depends = "init"
+            description = "compile the source">
+        <javac srcdir = "${src}" destdir = "${build}" source="1.8"/>
+    </target>
+
+    <target name = "dist" depends = "compile"
+            description = "generate the distribution">
+        <mkdir dir = "${dist}"/>
+        <jar jarfile = "${dist}/${ant.project.name}-ant-${DSTAMP}.jar" basedir = "${build}"/>
+    </target>
+
+    <target name = "clean"
+            description = "clean up">
+        <delete dir = "${build}"/>
+        <delete dir = "${dist}"/>
+    </target>
+</project>
