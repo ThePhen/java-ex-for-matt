@@ -29,7 +29,7 @@ public class Demo {
         java.util.List<String> arrayList1 = new ArrayList<>(Arrays.asList(projectsForClientAry));
 
         Choice l1 = new Choice();
-        arrayList1.forEach((i) -> l1.add(i));
+        arrayList1.forEach(l1::add);
         frame.add(l1);
 
         Button startProcess = new Button("Start Processing");
