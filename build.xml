@@ -1,29 +1,82 @@
-<project name = "java-ex-for-matt" default = "dist" basedir = ".">
+<project xmlns:ivy="antlib:org.apache.ivy.ant" name="java-ex-for-matt" default="dist" basedir="."
+>
+    <property name="src" location="src/main"/>
+    <property name="build" location="target/classes"/>
+    <property name="dist" location="target"/>
+    <property name="ivy.install.version" value="2.5.3"/>
+    <property name="ivy.jar.dir" value="${basedir}/ivy"/>
+    <property name="ivy.jar.file" value="${ivy.jar.dir}/ivy.jar"/>
 
-    <!-- set global properties for this build -->
-    <property name = "src" location = "src/main"/>
-    <property name = "build" location = "target/classes"/>
-    <property name = "dist" location = "target"/>
+    <target name="download-ivy" unless="skip.download">
+        <mkdir dir="${ivy.jar.dir}"/>
+        <echo message="installing ivy..."/>
+        <get src="https://repo1.maven.org/maven2/org/apache/ivy/ivy/${ivy.install.version}/ivy-${ivy.install.version}.jar"
+             dest="${ivy.jar.file}" usetimestamp="true"/>
+    </target>
 
-    <target name = "init">
+    <target name="install-ivy" depends="download-ivy"
+            description="--> install ivy">
+        <path id="ivy.lib.path">
+            <fileset dir="${ivy.jar.dir}" includes="*.jar"/>
+        </path>
+        <taskdef resource="org/apache/ivy/ant/antlib.xml"
+                 uri="antlib:org.apache.ivy.ant"
+                 classpathref="ivy.lib.path"/>
+    </target>
+
+    <target name="init">
         <tstamp/>
-        <mkdir dir = "${build}"/>
+        <mkdir dir="${build}"/>
     </target>
 
-    <target name = "compile" depends = "init"
-            description = "compile the source">
-        <javac srcdir = "${src}" destdir = "${build}" source="1.8"/>
+    <target name="run" depends="install-ivy"
+            description="runs the App">
+        <ivy:cachepath organisation="com.beust" module="jcommander"
+                       revision="1.82" pathid="lib.path.id"
+                       inline="true"/>
+        <java classname="org.example.App" fork="true">
+            <classpath>
+                <path refid="lib.path.id"/>
+                <path location="${build}"/>
+            </classpath>
+        </java>
     </target>
 
-    <target name = "dist" depends = "compile"
-            description = "generate the distribution">
-        <mkdir dir = "${dist}"/>
-        <jar jarfile = "${dist}/${ant.project.name}-ant-${DSTAMP}.jar" basedir = "${build}"/>
+    <target name="run-headless" depends="install-ivy"
+            description="runs the App">
+        <ivy:cachepath organisation="com.beust" module="jcommander"
+                       revision="1.82" pathid="lib.path.id"
+                       inline="true"/>
+        <java classname="org.example.App" fork="true"
+              args="--run-silent --client=a --project=b">
+            <classpath>
+                <path refid="lib.path.id"/>
+                <path location="${build}"/>
+            </classpath>
+        </java>
     </target>
 
-    <target name = "clean"
-            description = "clean up">
-        <delete dir = "${build}"/>
-        <delete dir = "${dist}"/>
+    <target name="compile" depends="init, install-ivy"
+            description="compile the source">
+
+        <ivy:cachepath organisation="com.beust" module="jcommander"
+                       revision="1.82" pathid="lib.path.id"
+                       inline="true"/>
+
+        <javac srcdir="${src}" destdir="${build}" source="1.8"
+               classpathref="lib.path.id"/>
+    </target>
+
+    <target name="dist" depends="compile"
+            description="generate the distribution">
+        <mkdir dir="${dist}"/>
+        <jar jarfile="${dist}/${ant.project.name}-ant-${DSTAMP}.jar"
+             basedir="${build}"/>
+    </target>
+
+    <target name="clean"
+            description="clean up">
+        <delete dir="${build}"/>
+        <delete dir="${dist}"/>
     </target>
 </project>
