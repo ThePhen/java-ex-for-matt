@@ -28,6 +28,11 @@
             <artifactId>maven-project-info-reports-plugin</artifactId>
             <version>3.6.1</version>
         </dependency>
+        <dependency>
+            <groupId>com.beust</groupId>
+            <artifactId>jcommander</artifactId>
+            <version>1.82</version>
+        </dependency>
     </dependencies>
 
     <build>
