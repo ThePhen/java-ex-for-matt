@@ -1,4 +1,4 @@
-package org.example;
+package org.example.util;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
