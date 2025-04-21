@@ -4,6 +4,8 @@ import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
 
+import java.util.Objects;
+
 @Parameters(separators = "=")
 public class CmdArgsJobContext implements JobContext {
     @Parameter(names = {"-run-silent", "--run-silent"}, description = "When this flag is present, the job will " +
@@ -52,7 +54,7 @@ public class CmdArgsJobContext implements JobContext {
 
     @Override
     public int getStartingSequenceNumber() {
-        return startSeqNum;
+        return Math.min(10, Math.max(startSeqNum, 1));
     }
 
     @Override

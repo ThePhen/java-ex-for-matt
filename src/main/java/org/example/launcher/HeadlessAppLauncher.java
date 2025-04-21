@@ -5,7 +5,7 @@ import org.example.JobProcessor;
 
 import java.util.Objects;
 
-public class HeadlessAppLauncher implements Launcher, JobContext {
+public class HeadlessAppLauncher implements Launcher {
     private final JobContext parentContext;
 
     public HeadlessAppLauncher(JobContext ctx) {
@@ -15,7 +15,7 @@ public class HeadlessAppLauncher implements Launcher, JobContext {
     public void start() {
         validateNeededInputArgs();
         final JobProcessor runner = new JobProcessor();
-        runner.startProcessing(this);
+        runner.startProcessing(parentContext);
     }
 
     private void validateNeededInputArgs() {
@@ -28,31 +28,5 @@ public class HeadlessAppLauncher implements Launcher, JobContext {
             System.exit(-1);
         }
     }
-
-    @Override
-    public String getProjectName() {
-        return "";
-    }
-
-    @Override
-    public String getClientName() {
-        return "";
-    }
-
-    @Override
-    public int getStartingSequenceNumber() {
-        final Integer seqNum = parentContext.getStartingSequenceNumber();
-        if (Objects.isNull(seqNum)) return new Integer(1);
-        return Math.min(10, Math.max(seqNum.intValue(), 1));
-    }
-
-    @Override
-    public boolean isRunningSilent() {
-        return false;
-    }
-
-    @Override
-    public void logProgress(String message) {
-
-    }
 }
+

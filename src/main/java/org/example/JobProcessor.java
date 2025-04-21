@@ -6,7 +6,6 @@ public class JobProcessor {
         String msg = "Client: " + ctx.getClientName() +
                 "\nProject: " + ctx.getProjectName() +
                 "\nStarting at (if any): " + ctx.getStartingSequenceNumber();
-        System.out.println(msg);
         ctx.logProgress(msg);
     }
 }
