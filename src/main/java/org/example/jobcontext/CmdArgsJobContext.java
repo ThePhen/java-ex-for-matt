@@ -4,6 +4,8 @@ import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
 
+import java.util.Objects;
+
 @Parameters(separators = "=")
 public class CmdArgsJobContext extends BaseJobContext {
 
@@ -22,7 +24,7 @@ public class CmdArgsJobContext extends BaseJobContext {
 
     @Parameter(names = {"--user-home"}, description = "The path to the user's home. By default, the value " +
             "the OS provides is used.")
-    private String userHomePath = System.getProperty("user.home");
+    private String userHomePath = determineUserHome();
 
     @Parameter(names = {"-h", "--help"}, description = "Print help message", help = true)
     private boolean help = false;
@@ -37,6 +39,12 @@ public class CmdArgsJobContext extends BaseJobContext {
             jCommander.usage();
             System.exit(0);
         }
+    }
+
+    private static String determineUserHome() {
+        String envVar = System.getenv("SETTINGS_HOME");
+        if(Objects.isNull(envVar)) return System.getProperty("user.home");
+        return envVar;
     }
 
     @Override
