@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="App" type="Application" factoryName="Application" nameIsGenerated="true">
+  <configuration default="false" name="App Headless" type="Application" factoryName="Application">
     <option name="MAIN_CLASS_NAME" value="org.example.App" />
     <module name="java-ex-for-matt" />
     <option name="PROGRAM_PARAMETERS" value="--run-silent --client=a --project=b" />
