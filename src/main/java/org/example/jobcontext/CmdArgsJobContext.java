@@ -43,8 +43,8 @@ public class CmdArgsJobContext extends BaseJobContext {
 
     private static String determineUserHome() {
         String envVar = System.getenv("SETTINGS_HOME");
-        if(Objects.isNull(envVar)) return System.getProperty("user.home");
-        return envVar;
+        if (Objects.nonNull(envVar)) return envVar;
+        return System.getProperty("user.home");
     }
 
     @Override

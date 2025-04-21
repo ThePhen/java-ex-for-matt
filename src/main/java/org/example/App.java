@@ -1,16 +1,11 @@
 package org.example;
 
-import org.example.jobcontext.CmdArgsJobContext;
-import org.example.jobcontext.JobContext;
-import org.example.launcher.GuiAppLauncher;
-import org.example.launcher.HeadlessAppLauncher;
 import org.example.launcher.Launcher;
+import org.example.launcher.LauncherFactory;
 
 public class App {
-
     public static void main(String[] args) {
-        final JobContext ctx = new CmdArgsJobContext(args);
-        Launcher w = ctx.isRunningSilent() ? new HeadlessAppLauncher(ctx) : new GuiAppLauncher(args);
+        Launcher w = LauncherFactory.make(args);
         w.start();
     }
 }

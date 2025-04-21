@@ -1,5 +1,4 @@
-<project xmlns:ivy="antlib:org.apache.ivy.ant" name="java-ex-for-matt" default="dist" basedir="."
->
+<project xmlns:ivy="antlib:org.apache.ivy.ant" name="java-ex-for-matt" default="dist" basedir=".">
     <property name="src" location="src/main"/>
     <property name="build" location="target/classes"/>
     <property name="dist" location="target"/>
