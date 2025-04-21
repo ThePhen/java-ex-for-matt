@@ -1,6 +1,5 @@
 package org.example.launcher;
 
-import com.google.common.base.Strings;
 import org.example.JobContext;
 import org.example.JobProcessor;
 import org.example.Utils;
@@ -27,12 +26,58 @@ public class GuiAppLauncher implements Launcher {
         parentContext = ctx;
     }
 
-    public void start() {
-        try {
-            buildAndStartTheGui();
-        } catch (Exception e) {
-            guiCentricErrorHandler(new RuntimeException("Unhandled error within the GUI.", e));
-        }
+    private void buildAndStartTheGui() {
+        frame = new Frame("Label and TextField Example");
+
+        clientTextField = makeNewTextField("Client: ", parentContext.getClientName());
+        projectTextField = makeNewTextField("Project: ", parentContext.getProjectName());
+        startSequenceNumTextField = makeNewTextField("Start Sequence Num: ");
+        makeTheExtraFieldDropdownExample();
+        makeTheStartButton();
+        makeTheOutputTextarea();
+
+        frame.setSize(600, 800);
+        frame.setLayout(new FlowLayout());
+        frame.addWindowListener(
+                new WindowAdapter() {
+                    public void windowClosing(WindowEvent windowEvent) {
+                        System.exit(0);
+                    }
+                });
+        frame.setVisible(true);
+    }
+
+    private JobContext getGuiJobContext() {
+        return new JobContext() {
+            @Override
+            public String getClientName() {
+                return clientTextField.getText();
+            }
+
+            @Override
+            public String getProjectName() {
+                return projectTextField.getText();
+            }
+
+            @Override
+            public int getStartingSequenceNumber() {
+                try {
+                    return Integer.parseInt(startSequenceNumTextField.getText());
+                } catch (NumberFormatException e) {
+                    return 1;
+                }
+            }
+
+            @Override
+            public boolean isRunningSilent() {
+                return parentContext.isRunningSilent();
+            }
+
+            @Override
+            public void logProgress(String message) {
+                outputTextArea.append("\n" + message);
+            }
+        };
     }
 
     private void guiCentricErrorHandler(Exception e) {
@@ -49,25 +94,68 @@ public class GuiAppLauncher implements Launcher {
         System.exit(-1);
     }
 
-    private void buildAndStartTheGui() {
-        frame = new Frame("Label and TextField Example");
+    private boolean inputsAreGood() {
+        final boolean a = isClientNameGood();
+        final boolean b = isProjectNameGood();
+        final boolean c = isStartSeqNumGood();
+        return a && b && c;
+    }
 
-        clientTextField = makeNewTextField("Client: ");
-        projectTextField = makeNewTextField("Project: ");
-        startSequenceNumTextField = makeNewTextField("Start Sequence Num: ");
-        makeTheExtraFieldDropdownExample();
-        makeTheStartButton();
-        makeTheOutputTextarea();
+    private boolean isClientNameGood() {
+        if (isNullOrEmpty(clientTextField.getText())) {
+            outputTextArea.append("\nThe Client Name must not be blank.");
+            return false;
+        }
+        return true;
+    }
 
-        frame.setSize(600, 800);
-        frame.setLayout(new FlowLayout());
-        frame.addWindowListener(
-                new WindowAdapter() {
-                    public void windowClosing(WindowEvent windowEvent) {
-                        System.exit(0);
-                    }
-                });
-        frame.setVisible(true);
+    private boolean isNullOrEmpty(String s) {
+        return (s == null || s.trim().isEmpty());
+    }
+
+    private boolean isProjectNameGood() {
+        if (isNullOrEmpty(projectTextField.getText())) {
+            outputTextArea.append("\nThe Project Name must not be blank.");
+            return false;
+        }
+        return true;
+    }
+
+    private boolean isStartSeqNumGood() {
+        final String s = startSequenceNumTextField.getText();
+        if (isNullOrEmpty(s)) return true;
+        try {
+            return 0 < Integer.parseInt(s);
+        } catch (NumberFormatException e) {
+            outputTextArea.append("\nThe Starting Sequence Number must be blank " +
+                    "or a number greater than zero.");
+            return false;
+        }
+    }
+
+    private TextField makeNewTextField(String labelText, String defaultText) {
+        final TextField field = makeNewTextField(labelText);
+        if (!isNullOrEmpty(defaultText)) field.setText(defaultText);
+        return field;
+    }
+
+    private TextField makeNewTextField(String labelText) {
+        Label clientLabel = new Label(labelText);
+        frame.add(clientLabel);
+        TextField newComponent = new TextField(20);
+        frame.add(newComponent);
+        return newComponent;
+    }
+
+    private void makeTheExtraFieldDropdownExample() {
+        Label dropdownLabel = new Label("Extra Parameter: ");
+        frame.add(dropdownLabel);
+        String[] projectsForClientAry = {"Item 1", "Item 2", "Item 3", "Item 4", "Item 5"};
+        java.util.List<String> projects = new ArrayList<>(Arrays.asList(projectsForClientAry));
+        choiceList = new Choice();
+        projects.forEach(choiceList::add); // syntax A
+        for (String s : projectsForClientAry) choiceList.add(s); // syntax B
+        frame.add(choiceList);
     }
 
     private void makeTheOutputTextarea() {
@@ -97,90 +185,11 @@ public class GuiAppLauncher implements Launcher {
         outputTextArea.append("\n=== " + LocalDateTime.now() + " ===");
     }
 
-    private boolean inputsAreGood() {
-        final boolean a = isClientNameGood();
-        final boolean b = isProjectNameGood();
-        final boolean c = isStartSeqNumGood();
-        return a && b && c;
-    }
-
-    private boolean isStartSeqNumGood() {
-        final String s = startSequenceNumTextField.getText();
-        if (Strings.isNullOrEmpty(s)) return true;
+    public void start() {
         try {
-            return 0 < Integer.parseInt(s);
-        } catch (NumberFormatException e) {
-            outputTextArea.append("\nThe Starting Sequence Number must be blank " +
-                    "or a number greater than zero.");
-            return false;
+            buildAndStartTheGui();
+        } catch (Exception e) {
+            guiCentricErrorHandler(new RuntimeException("Unhandled error within the GUI.", e));
         }
-    }
-
-    private boolean isProjectNameGood() {
-        if (Strings.isNullOrEmpty(projectTextField.getText())) {
-            outputTextArea.append("\nThe Project Name must not be blank.");
-            return false;
-        }
-        return true;
-    }
-
-    private boolean isClientNameGood() {
-        if (Strings.isNullOrEmpty(clientTextField.getText())) {
-            outputTextArea.append("\nThe Client Name must not be blank.");
-            return false;
-        }
-        return true;
-    }
-
-    private void makeTheExtraFieldDropdownExample() {
-        Label dropdownLabel = new Label("Extra Parameter: ");
-        frame.add(dropdownLabel);
-        String[] projectsForClientAry = {"Item 1", "Item 2", "Item 3", "Item 4", "Item 5"};
-        java.util.List<String> projects = new ArrayList<>(Arrays.asList(projectsForClientAry));
-        choiceList = new Choice();
-        projects.forEach(choiceList::add); // syntax A
-        for (String s : projectsForClientAry) choiceList.add(s); // syntax B
-        frame.add(choiceList);
-    }
-
-    private TextField makeNewTextField(String label) {
-        Label clientLabel = new Label(label);
-        frame.add(clientLabel);
-        TextField newComponent = new TextField(20);
-        frame.add(newComponent);
-        return newComponent;
-    }
-
-    private JobContext getGuiJobContext() {
-        return new JobContext() {
-            @Override
-            public String getProjectName() {
-                return projectTextField.getText();
-            }
-
-            @Override
-            public String getClientName() {
-                return clientTextField.getText();
-            }
-
-            @Override
-            public int getStartingSequenceNumber() {
-                try {
-                    return Integer.parseInt(startSequenceNumTextField.getText());
-                } catch (NumberFormatException e) {
-                    return 1;
-                }
-            }
-
-            @Override
-            public boolean isRunningSilent() {
-                return parentContext.isRunningSilent();
-            }
-
-            @Override
-            public void logProgress(String message) {
-                outputTextArea.append("\n" + message);
-            }
-        };
     }
 }
