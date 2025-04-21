@@ -2,7 +2,7 @@
   <configuration default="false" name="App GUI" type="Application" factoryName="Application">
     <option name="MAIN_CLASS_NAME" value="org.example.App" />
     <module name="java-ex-for-matt" />
-    <option name="PROGRAM_PARAMETERS" value="--client=a --project=b" />
+    <option name="PROGRAM_PARAMETERS" value="--client=a --project=b -s=5 --user-home=&quot;./example_home_files&quot;" />
     <extension name="coverage">
       <pattern>
         <option name="PATTERN" value="org.example.launcher.*" />

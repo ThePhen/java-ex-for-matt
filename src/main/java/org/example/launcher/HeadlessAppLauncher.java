@@ -1,6 +1,6 @@
 package org.example.launcher;
 
-import org.example.JobContext;
+import org.example.jobcontext.JobContext;
 import org.example.JobProcessor;
 
 import java.util.Objects;
