@@ -1,9 +1,9 @@
 package org.example.launcher;
 
+import org.example.JobProcessor;
 import org.example.jobcontext.CmdArgsJobContext;
 import org.example.jobcontext.JobContext;
-import org.example.JobProcessor;
-import org.example.util.Utils;
+import org.example.util.ExceptionUtils;
 
 import javax.swing.*;
 import java.awt.*;
@@ -54,7 +54,7 @@ public class GuiAppLauncher implements Launcher {
         System.err.println("Unhandled Exception at startTheGui:\n" + e);
         e.printStackTrace();
 
-        String trace = Utils.getStackTraceAsString(e);
+        String trace = ExceptionUtils.getStackTraceAsString(e);
         jobContext.logProgress("Unhandled Exception at startTheGui:\n");
         jobContext.logProgress(trace);
 

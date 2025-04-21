@@ -3,7 +3,7 @@ package org.example.util;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
-public class Utils {
+public class ExceptionUtils {
     public static String getStackTraceAsString(Exception e) {
         try {
             StringWriter sw = new StringWriter();
