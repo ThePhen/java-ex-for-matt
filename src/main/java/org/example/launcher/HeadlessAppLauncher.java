@@ -14,8 +14,8 @@ public class HeadlessAppLauncher implements Launcher {
 
     public void start() {
         validateNeededInputArgs();
-        final JobProcessor runner = new JobProcessor();
-        runner.startProcessing(parentContext);
+        final JobProcessor runner = new JobProcessor(parentContext);
+        runner.startProcessing();
     }
 
     private void validateNeededInputArgs() {

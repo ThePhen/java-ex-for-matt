@@ -105,7 +105,7 @@ public class GuiAppLauncher implements Launcher {
             outputTimestamp();
             if (jobContext.areInputsGood()) {
                 try {
-                    new JobProcessor().startProcessing(jobContext);
+                    new JobProcessor(jobContext).startProcessing();
                 } catch (Exception ex) {
                     guiCentricErrorHandler(new RuntimeException("Unhandled error during processing.", ex));
                 }
