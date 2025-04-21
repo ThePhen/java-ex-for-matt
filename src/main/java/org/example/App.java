@@ -26,11 +26,11 @@ public class App {
         Label dropdownLabel = new Label("Useless Dropdown: ");
         frame.add(dropdownLabel);
         String[] projectsForClientAry = {"Item 1", "Item 2", "Item 3", "Item 4", "Item 5"};
-        java.util.List<String> arrayList1 = new ArrayList<>(Arrays.asList(projectsForClientAry));
-
-        Choice l1 = new Choice();
-        arrayList1.forEach(l1::add);
-        frame.add(l1);
+        java.util.List<String> projects = new ArrayList<>(Arrays.asList(projectsForClientAry));
+        Choice choiceList = new Choice();
+        projects.forEach(choiceList::add);
+        for (String s : projectsForClientAry) choiceList.add(s);
+        frame.add(choiceList);
 
         Button startProcess = new Button("Start Processing");
         frame.add(startProcess);
