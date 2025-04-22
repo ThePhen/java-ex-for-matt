@@ -39,9 +39,7 @@ public class JobProcessor {
     }
 
     private boolean isClientNameGood() {
-        boolean isBad = isNullOrEmpty(ctx.getClientName());
-        if (isBad) ctx.logProgress("\nThe Client Name must not be blank.");
-        return !isBad;
+        return nameCheck("Client Name", ctx.getClientName());
     }
 
     private boolean isNullOrEmpty(String s) {
@@ -49,8 +47,12 @@ public class JobProcessor {
     }
 
     private boolean isProjectNameGood() {
-        boolean isBad = isNullOrEmpty(ctx.getProjectName());
-        if (isBad) ctx.logProgress("\nThe Project Name must not be blank.");
+        return nameCheck("Project Name", ctx.getProjectName());
+    }
+
+    private boolean nameCheck(String nameTitle, String nameVal) {
+        boolean isBad = isNullOrEmpty(nameVal);
+        if (isBad) ctx.logProgress("\nThe " + nameTitle + " must not be blank.");
         return !isBad;
     }
 
