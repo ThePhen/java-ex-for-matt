@@ -54,8 +54,12 @@ public class JobProcessor {
     }
 
     private int numInputFiles() {
-        File inputDir = new File(getJobProjectRootDir(), "Inputs");
-        return inputDir.listFiles().length;
+        try {
+            File inputDir = new File(getJobProjectRootDir(), "Inputs");
+            return inputDir.listFiles().length;
+        } catch (Exception e) {
+            throw new RuntimeException("Trouble trying to count the number of record files for the project.", e);
+        }
     }
 
     public void startProcessing() {

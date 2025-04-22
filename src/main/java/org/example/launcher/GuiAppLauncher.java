@@ -8,8 +8,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.io.File;
-import java.time.LocalDateTime;
 
 public class GuiAppLauncher implements Launcher {
     private final GuiJobContext guiJobContext;
@@ -98,10 +96,6 @@ public class GuiAppLauncher implements Launcher {
         frame.add(startProcessBtn);
     }
 
-    private void outputTimestamp() {
-        outputTextArea.append("\n=== " + LocalDateTime.now() + " ===");
-    }
-
     public void start() {
         try {
             buildAndStartTheGui();
@@ -111,7 +105,7 @@ public class GuiAppLauncher implements Launcher {
     }
 
     private class GuiJobContext implements JobContext {
-        JobContext next;
+        final JobContext next;
 
         public GuiJobContext(JobContext next) {
             this.next = next;

@@ -4,7 +4,6 @@ import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
 
-import java.io.File;
 import java.util.Objects;
 
 public class CmdArgsJobContext implements JobContext {
@@ -54,7 +53,7 @@ public class CmdArgsJobContext implements JobContext {
     }
 
     @Parameters(separators = "=")
-    class ParmsFromCommandLine {
+    static class ParmsFromCommandLine {
         @Parameter(names = {"-run-silent", "--run-silent"}, description = "When this flag is present, the job will " +
                 "run without any user intervention required. Used for job automation.")
         private boolean runSilent = false;

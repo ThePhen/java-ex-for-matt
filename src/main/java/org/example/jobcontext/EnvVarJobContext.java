@@ -1,6 +1,5 @@
 package org.example.jobcontext;
 
-import java.io.File;
 import java.util.Objects;
 
 public class EnvVarJobContext implements JobContext {
@@ -44,7 +43,7 @@ public class EnvVarJobContext implements JobContext {
 
     public boolean isRunningSilent() {
         try {
-            String c = System.getenv("EX_RUN_SLIENT");
+            String c = System.getenv("EX_RUN_CLIENT");
             if (Objects.nonNull(c)) return Boolean.parseBoolean(c);
             return next.isRunningSilent();
         } catch (Exception ex) {

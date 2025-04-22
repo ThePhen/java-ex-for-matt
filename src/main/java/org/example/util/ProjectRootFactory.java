@@ -50,16 +50,14 @@ public class ProjectRootFactory {
             doc.getDocumentElement().normalize();
 
             NodeList nodeList = doc.getElementsByTagName("ProjectRoot");
-            for (int i = 0; i < nodeList.getLength(); i++) {
-                Element element = (Element) nodeList.item(i);
+            if (nodeList.getLength() > 0) {
+                Element element = (Element) nodeList.item(0);
                 final String body = element.getTextContent().trim();
                 return new File(body);
             }
             throw new IllegalStateException("Can not determine the Project Root " +
                     "from the '" + xmlFile + "' file.");
-        } catch (ParserConfigurationException e) {
-            throw new RuntimeException(e);
-        } catch (SAXException e) {
+        } catch (ParserConfigurationException | SAXException e) {
             throw new RuntimeException(e);
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -70,8 +68,7 @@ public class ProjectRootFactory {
         try {
             final File homeFile = getHomeFile(homePath);
             final File localConfigOverrideFile = getSettingsFile(homeFile);
-            final File projectsRootDirFromOverrides = getProjectsRootDirFromOverrides(localConfigOverrideFile);
-            return projectsRootDirFromOverrides;
+            return getProjectsRootDirFromOverrides(localConfigOverrideFile);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
