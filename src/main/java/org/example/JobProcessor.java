@@ -6,6 +6,7 @@ import org.example.util.ProjectRootFactory;
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 public class JobProcessor {
@@ -64,11 +65,16 @@ public class JobProcessor {
 
     public void startProcessing() {
         // NOTE: This would be much more complicated. It's where the real work begins.
-        if (!areInputsGood()) throw new IllegalArgumentException("The input configuration is flawed. See above.");
-        String msg = "Job Project Root (" + numInputFiles() + " Records found): " + getJobProjectRootDir() +
-                "\nClient: " + ctx.getClientName() +
-                "\nProject: " + ctx.getProjectName() +
-                "\nStarting at (if any): " + ctx.getStartingSequenceNumber();
-        ctx.logProgress(msg);
+        try {
+            ctx.logProgress("=== " + LocalDateTime.now() + " ===");
+            if (!areInputsGood()) throw new IllegalArgumentException("The input configuration is flawed. See above.");
+            String msg = "Job Project Root (" + numInputFiles() + " Records found): " + getJobProjectRootDir() +
+                    "\nClient: " + ctx.getClientName() +
+                    "\nProject: " + ctx.getProjectName() +
+                    "\nStarting at (if any): " + ctx.getStartingSequenceNumber();
+            ctx.logProgress(msg);
+        } finally {
+            ctx.logProgress("=== " + LocalDateTime.now() + " ===");
+        }
     }
 }
