@@ -10,17 +10,17 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
-class Gui {
+class JobStarterUi {
 
-    private final GuiAppLauncher guiAppLauncher;
+    private final GuiLauncher guiLauncher;
     TextField projectName;
     TextField startSeqNum;
     TextArea progressDisplay;
     TextField clientName;
     private Frame frame;
 
-    public Gui(GuiAppLauncher guiAppLauncher) {
-        this.guiAppLauncher = guiAppLauncher;
+    public JobStarterUi(GuiLauncher guiLauncher) {
+        this.guiLauncher = guiLauncher;
     }
 
     public void buildTheGui(JobContext nextCtx, ActionListener onStartButton) {

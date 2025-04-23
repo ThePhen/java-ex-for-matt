@@ -6,37 +6,40 @@ import org.example.launcher.Launcher;
 import org.example.util.StringUtils;
 
 import java.awt.*;
+import java.awt.event.ActionEvent;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
-public class GuiAppLauncher implements Launcher {
+public class GuiLauncher implements Launcher {
     private final GuiJobContext ctx;
     private final JobContext parentCtx;
     private Frame frame;
-    private Gui gui;
+    private JobStarterUi jobStarterUi;
 
-    public GuiAppLauncher(JobContext next) {
+    public GuiLauncher(JobContext next) {
         parentCtx = next;
         ctx = new GuiJobContext(next);
     }
 
+    private void startProcessing(ActionEvent e) {
+        try {
+            final JobProcessor job = new JobProcessor(ctx);
+            job.startProcessing();
+        } catch (IllegalArgumentException ex) {
+            jobStarterUi.displayError(ctx, new RuntimeException("Re-check the inputs and try again.", ex));
+        } catch (Exception ex) {
+            jobStarterUi.displayError(ctx, new RuntimeException("Unhandled error during processing.", ex));
+            if (!(ex.getCause() instanceof FileNotFoundException)) System.exit(-1);
+        }
+    }
+
     public void start() {
         try {
-            gui = new Gui(this);
-            gui.buildTheGui(parentCtx, e -> {
-                try {
-                    final JobProcessor job = new JobProcessor(ctx);
-                    job.startProcessing();
-                } catch (IllegalArgumentException ex) {
-                    gui.displayError(ctx, new RuntimeException("Re-check the inputs and try again.", ex));
-                } catch (Exception ex) {
-                    gui.displayError(ctx, new RuntimeException("Unhandled error during processing.", ex));
-                    if (!(ex.getCause() instanceof FileNotFoundException)) System.exit(-1);
-                }
-            });
-            gui.startTheGui();
+            jobStarterUi = new JobStarterUi(this);
+            jobStarterUi.buildTheGui(parentCtx, this::startProcessing);
+            jobStarterUi.startTheGui();
         } catch (Exception e) {
-            gui.displayError(ctx, new RuntimeException("Unhandled error within the GUI.", e));
+            jobStarterUi.displayError(ctx, new RuntimeException("Unhandled error within the GUI.", e));
             System.exit(-1);
         }
     }
@@ -49,18 +52,18 @@ public class GuiAppLauncher implements Launcher {
         }
 
         public String getClientName() {
-            if (StringUtils.isNullOrEmpty(gui.clientName.getText())) return next.getClientName();
-            return gui.clientName.getText().trim();
+            if (StringUtils.isNullOrEmpty(jobStarterUi.clientName.getText())) return next.getClientName();
+            return jobStarterUi.clientName.getText().trim();
         }
 
         public String getProjectName() {
-            final String s = gui.projectName.getText();
+            final String s = jobStarterUi.projectName.getText();
             if (StringUtils.isNullOrEmpty(s)) return next.getProjectName();
             return s.trim();
         }
 
         public int getStartingSequenceNumber() {
-            final String fieldText = gui.startSeqNum.getText();
+            final String fieldText = jobStarterUi.startSeqNum.getText();
             if (StringUtils.isNullOrEmpty(fieldText)) return next.getStartingSequenceNumber();
             try {
                 return Integer.parseInt(fieldText);
@@ -80,7 +83,7 @@ public class GuiAppLauncher implements Launcher {
         }
 
         public void logProgress(String message) {
-            gui.progressDisplay.append("\n" + message);
+            jobStarterUi.progressDisplay.append("\n" + message);
         }
     }
 }

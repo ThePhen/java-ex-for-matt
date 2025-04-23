@@ -6,6 +6,7 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.function.Consumer;
 
 import static java.nio.file.Files.walk;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -20,26 +21,15 @@ public class TestHelpers {
      * <p>
      * Sometimes the files will already exist, so we're swallowing the error that occurs when that happens.
      *
-     * @param sourceDirectoryLocation the root directory whose contents will be duplicated
+     * @param sourceDirectoryLocation      the root directory whose contents will be duplicated
      * @param destinationDirectoryLocation the root directory into which the duplicates will be placed.
      * @throws IOException
      */
     public static void copyDirectory(String sourceDirectoryLocation, String destinationDirectoryLocation)
             throws IOException {
         //noinspection resource
-        walk(Paths.get(sourceDirectoryLocation))
-                .forEach(source -> {
-                    Path destination = Paths.get(destinationDirectoryLocation, source.toString()
-                            .substring(sourceDirectoryLocation.length()));
-                    try {
-                        Files.copy(source, destination);
-                    } catch (java.nio.file.FileAlreadyExistsException e) {
-                        // noop
-                    } catch (IOException e) {
-                        System.err.println("Swallowing IOException while duplicating a directory. " +
-                                "IOException was: " + e.getMessage());
-                    }
-                });
+        final Copier copier = new Copier(destinationDirectoryLocation, sourceDirectoryLocation);
+        walk(Paths.get(sourceDirectoryLocation)).forEach(copier);
     }
 
     /**
@@ -84,5 +74,29 @@ public class TestHelpers {
         final URL testHomeUrl = classLoader.getResource(TEST_HOME_DIR_NAME);
         final String testHomeFilePath = testHomeUrl.getFile();
         return new File(testHomeFilePath);
+    }
+
+    private static class Copier implements Consumer<Path> {
+        private final String destinationDirectoryLocation;
+        private final String sourceDirectoryLocation;
+
+        public Copier(String destinationDirectoryLocation, String sourceDirectoryLocation) {
+            this.destinationDirectoryLocation = destinationDirectoryLocation;
+            this.sourceDirectoryLocation = sourceDirectoryLocation;
+        }
+
+        @Override
+        public void accept(Path source) {
+            Path destination = Paths.get(destinationDirectoryLocation, source.toString()
+                    .substring(sourceDirectoryLocation.length()));
+            try {
+                Files.copy(source, destination);
+            } catch (java.nio.file.FileAlreadyExistsException e) {
+                // noop
+            } catch (IOException e) {
+                System.err.println("Swallowing IOException while duplicating a directory. " +
+                        "IOException was: " + e.getMessage());
+            }
+        }
     }
 }

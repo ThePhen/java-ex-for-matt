@@ -6,10 +6,10 @@ import org.example.launcher.Launcher;
 
 import java.io.IOException;
 
-public class HeadlessAppLauncher implements Launcher {
+public class HeadlessLauncher implements Launcher {
     private final JobContext parentContext;
 
-    public HeadlessAppLauncher(JobContext ctx) {
+    public HeadlessLauncher(JobContext ctx) {
         parentContext = ctx;
     }
 

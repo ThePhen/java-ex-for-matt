@@ -10,6 +10,12 @@ class EnvVarJobContextTest {
 
     private final String NONCE = "";
 
+    private static String get(String name) {
+        if (name.equals("EX_START_SEQ_NUM")) return "-9";
+        if (name.equals("EX_RUN_SILENT")) return "TRUE";
+        return name;
+    }
+
     /**
      * testAllEnvsPresentEnvVars checks that none of the EnvVarJobContext's getters wind-up delegating
      * to its parent context (which is a test-related JobContext implementation written to support a
@@ -24,11 +30,7 @@ class EnvVarJobContextTest {
         /* this GetEnv impl returns either the name of the env-var whose value was sought,
         or a specific value for non-String values.
          */
-        EnvVarJobContext.GetEnv testEnv = (String name) -> {
-            if (name.equals("EX_START_SEQ_NUM")) return "-9";
-            if (name.equals("EX_RUN_SILENT")) return "TRUE";
-            return name;
-        };
+        EnvVarJobContext.GetEnv testEnv = EnvVarJobContextTest::get;
         DontCallMeJobContext testParentCtx = new DontCallMeJobContext();
         JobContext ctx = new EnvVarJobContext(testEnv, testParentCtx);
 
