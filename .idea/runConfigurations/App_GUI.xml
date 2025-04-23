@@ -8,7 +8,7 @@
     <option name="PROGRAM_PARAMETERS" value="--client=&quot;Client B&quot; --project=&quot;Project Z&quot; -s=5" />
     <extension name="coverage">
       <pattern>
-        <option name="PATTERN" value="org.example.launcher.*" />
+        <option name="PATTERN" value="org.example.launcher.gui.*" />
         <option name="ENABLED" value="true" />
       </pattern>
     </extension>

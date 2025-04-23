@@ -1,5 +1,7 @@
 package org.example.launcher;
 
+import org.example.launcher.gui.GuiAppLauncher;
+import org.example.launcher.headless.HeadlessAppLauncher;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;

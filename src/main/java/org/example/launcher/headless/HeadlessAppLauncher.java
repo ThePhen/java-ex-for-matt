@@ -1,7 +1,8 @@
-package org.example.launcher;
+package org.example.launcher.headless;
 
 import org.example.JobProcessor;
 import org.example.jobcontext.JobContext;
+import org.example.launcher.Launcher;
 
 import java.io.IOException;
 
