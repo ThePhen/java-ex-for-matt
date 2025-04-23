@@ -4,128 +4,74 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 class EnvVarJobContextTest {
 
     private final String NONCE = "";
 
+    /**
+     * testAllEnvsPresentEnvVars checks that none of the EnvVarJobContext's getters wind-up delegating
+     * to its parent context (which is a test-related JobContext implementation written to support a
+     * test like this). Note: the logProgress method is expected to delegate the parent context, and this
+     * is checked for as well.
+     *
+     * @throws IOException
+     */
     @Test
     void testAllEnvsPresentEnvVars() throws IOException {
+
+        /* this GetEnv impl returns either the name of the env-var whose value was sought,
+        or a specific value for non-String values.
+         */
         EnvVarJobContext.GetEnv testEnv = (String name) -> {
             if (name.equals("EX_START_SEQ_NUM")) return "-9";
             if (name.equals("EX_RUN_SILENT")) return "TRUE";
             return name;
         };
-        TestAllEnvsPresentJobContext testParentCtx = new TestAllEnvsPresentJobContext();
+        DontCallMeJobContext testParentCtx = new DontCallMeJobContext();
         JobContext ctx = new EnvVarJobContext(testEnv, testParentCtx);
 
-        ctx.logProgress(NONCE);
-        assertTrue(testParentCtx.wasParentCtxCalled);
         assertEquals("EX_CLIENT", ctx.getClientName());
         assertEquals("EX_PROJECT", ctx.getProjectName());
         assertEquals(-9, ctx.getStartingSequenceNumber());
         assertEquals("EX_USER_HOME", ctx.getUserHomePath());
         assertTrue(ctx.isRunningSilent());
+        assertFalse(testParentCtx.thisCtxWasCalled);
+
+        ctx.logProgress(NONCE);
+        assertTrue(testParentCtx.thisCtxWasCalled);
     }
 
+    /**
+     * testPassthroughs expects that none of the various `EX_*` environment variables are set, and checks
+     * that EnvVarJobContext will delegate its getters to the parent JobContext (which is a test-related
+     * JobContext implementation written to support this kind of test).
+     * @throws IOException
+     */
     @Test
     void testPassthroughs() throws IOException {
-        TestAllEnvsMissingJobContext testParentCtx = new TestAllEnvsMissingJobContext();
+        TrackIfEverCalledJobContext testParentCtx = new TrackIfEverCalledJobContext();
         JobContext ctx = new EnvVarJobContext(testParentCtx);
 
         // ignore the return vals. Just check that each call went 'up' to the parent ctx.
         ctx.getClientName();
-        assertTrue(testParentCtx.wasParentCtxCalled);
+        assertTrue(testParentCtx.ctxWasCalled);
 
         ctx.getProjectName();
-        assertTrue(testParentCtx.wasParentCtxCalled);
+        assertTrue(testParentCtx.ctxWasCalled);
 
         ctx.getStartingSequenceNumber();
-        assertTrue(testParentCtx.wasParentCtxCalled);
+        assertTrue(testParentCtx.ctxWasCalled);
 
         ctx.getUserHomePath();
-        assertTrue(testParentCtx.wasParentCtxCalled);
+        assertTrue(testParentCtx.ctxWasCalled);
 
         ctx.isRunningSilent();
-        assertTrue(testParentCtx.wasParentCtxCalled);
+        assertTrue(testParentCtx.ctxWasCalled);
 
         ctx.logProgress(NONCE);
-        assertTrue(testParentCtx.wasParentCtxCalled);
+        assertTrue(testParentCtx.ctxWasCalled);
 
-    }
-
-    public static class TestAllEnvsPresentJobContext implements JobContext {
-        public boolean wasParentCtxCalled = false;
-
-        @Override
-        public String getClientName() {
-            throw new RuntimeException("This should not have been called.");
-        }
-
-        @Override
-        public String getProjectName() {
-            throw new RuntimeException("This should not have been called.");
-        }
-
-        @Override
-        public int getStartingSequenceNumber() {
-            throw new RuntimeException("This should not have been called.");
-        }
-
-        @Override
-        public String getUserHomePath() {
-            throw new RuntimeException("This should not have been called.");
-        }
-
-        @Override
-        public boolean isRunningSilent() {
-            throw new RuntimeException("This should not have been called.");
-        }
-
-        @Override
-        public void logProgress(String message) {
-            wasParentCtxCalled = true;
-        }
-    }
-
-    class TestAllEnvsMissingJobContext implements JobContext {
-        boolean wasParentCtxCalled = false;
-
-        @Override
-        public String getClientName() {
-            wasParentCtxCalled = true;
-            return NONCE;
-        }
-
-        @Override
-        public String getProjectName() {
-            wasParentCtxCalled = true;
-            return NONCE;
-        }
-
-        @Override
-        public int getStartingSequenceNumber() {
-            wasParentCtxCalled = true;
-            return 0;
-        }
-
-        @Override
-        public String getUserHomePath() {
-            wasParentCtxCalled = true;
-            return NONCE;
-        }
-
-        @Override
-        public boolean isRunningSilent() {
-            wasParentCtxCalled = true;
-            return false;
-        }
-
-        @Override
-        public void logProgress(String message) {
-            wasParentCtxCalled = true;
-        }
     }
 }

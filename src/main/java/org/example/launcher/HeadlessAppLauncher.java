@@ -29,10 +29,6 @@ public class HeadlessAppLauncher implements Launcher {
             throw new IllegalArgumentException("If running in the headless mode, at least the --client " +
                     "and --project parameters must be provided. The starting sequence number " +
                     "is optional.");
-//            System.err.println("If running in the headless mode, at least the --client " +
-//                    "and --project parameters must be provided. The starting sequence number " +
-//                    "is optional.");
-//            System.exit(-1);
         }
     }
 }

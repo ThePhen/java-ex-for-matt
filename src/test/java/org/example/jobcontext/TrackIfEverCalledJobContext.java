@@ -1,42 +1,46 @@
 package org.example.jobcontext;
 
-class AlwaysDeferToParentTestJobContext implements JobContext {
+/**
+ * TrackIfEverCalledJobContext is used to test JobContext chains. If any of the
+ * implemented methods are invoked, the `ctxWasCalled` flagg will be 'true'.
+ */
+class TrackIfEverCalledJobContext implements JobContext {
 
     public final String NONCE = "";
-    public boolean wasParentCtxCalled = false;
+    public boolean ctxWasCalled = false;
 
     @Override
     public String getClientName() {
-        wasParentCtxCalled = true;
+        ctxWasCalled = true;
         return NONCE;
     }
 
     @Override
     public String getProjectName() {
-        wasParentCtxCalled = true;
+        ctxWasCalled = true;
         return NONCE;
     }
 
     @Override
     public int getStartingSequenceNumber() {
-        wasParentCtxCalled = true;
+        ctxWasCalled = true;
         return 0;
     }
 
     @Override
     public String getUserHomePath() {
-        wasParentCtxCalled = true;
+        ctxWasCalled = true;
         return NONCE;
     }
 
     @Override
     public boolean isRunningSilent() {
-        wasParentCtxCalled = true;
+        ctxWasCalled = true;
         return false;
     }
 
     @Override
     public void logProgress(String message) {
-        wasParentCtxCalled = true;
+        ctxWasCalled = true;
     }
 }

@@ -10,6 +10,7 @@ public class LauncherFactory {
         final JobContext baseCtx = new BaseJobContext();
         final JobContext envCtx = new EnvVarJobContext(baseCtx);
         final JobContext ctx = new CmdArgsJobContext(args, envCtx);
+        //FIXME should this really be using a `--headless` flag, instead?
         return ctx.isRunningSilent() ? new HeadlessAppLauncher(ctx) : new GuiAppLauncher(ctx);
     }
 }

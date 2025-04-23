@@ -36,7 +36,7 @@ public class JobProcessor {
 
     private File getProjectsRootDir() throws IOException {
         if (!Objects.isNull(cachedProjectsRootDir)) return cachedProjectsRootDir;
-        cachedProjectsRootDir = ProjectRootFactory.projectsRootDir(ctx.getUserHomePath());
+        cachedProjectsRootDir = ProjectRootFactory.deriveProjectsRootDir(ctx.getUserHomePath());
         return cachedProjectsRootDir;
     }
 
@@ -84,7 +84,7 @@ public class JobProcessor {
     }
 
     public void startProcessing() throws IOException {
-        // NOTE: This would be much more complicated. It's where the real work begins.
+        // NOTE: This would be much more complicated IRL. It's where the real work begins.
         try {
             ctx.logProgress("=== " + LocalDateTime.now() + " ===");
             if (!areInputsGood()) throw new IllegalArgumentException("The input configuration is flawed. See above.");

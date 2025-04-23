@@ -4,6 +4,10 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+/**
+ * LauncherFactoryTest checks that the factory returns the correct
+ * Launcher implementation based on the `-run-silent` flag.
+ */
 class LauncherFactoryTest {
 
     @Test

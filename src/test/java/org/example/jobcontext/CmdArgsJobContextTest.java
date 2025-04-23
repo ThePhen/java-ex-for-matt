@@ -4,11 +4,16 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class CmdArgsJobContextTest {
 
+    /** testHeppyPath checks that when provided sufficient input commmandline args,
+     * that CmdArgsJobContext does not delegate to its parent context. Note that logProgress,
+     * on the other hand, is meant to use delegation, however.
+     *
+     * @throws IOException
+     */
     @Test
     public void testHappyPath() throws IOException {
 
@@ -19,7 +24,7 @@ public class CmdArgsJobContextTest {
                 "-s", "99",
                 "--user-home", "bag's end"};
 
-        AlwaysDeferToParentTestJobContext parentCtx = new AlwaysDeferToParentTestJobContext();
+        TrackIfEverCalledJobContext parentCtx = new TrackIfEverCalledJobContext();
         JobContext testCtx = new CmdArgsJobContext(testArgs, parentCtx);
 
         assertEquals("client", testCtx.getClientName());
@@ -27,8 +32,9 @@ public class CmdArgsJobContextTest {
         assertEquals(99, testCtx.getStartingSequenceNumber());
         assertEquals("bag's end", testCtx.getUserHomePath());
         assertTrue(testCtx.isRunningSilent());
+        assertFalse(parentCtx.ctxWasCalled);
         testCtx.logProgress("");
-        assertTrue(parentCtx.wasParentCtxCalled);
+        assertTrue(parentCtx.ctxWasCalled);
 
     }
 }

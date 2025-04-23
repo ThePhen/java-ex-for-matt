@@ -14,41 +14,45 @@ class ProjectRootFactoryTest {
 
     private File testHome;
 
-    @Test
-    void getHomeFileHappy() throws FileNotFoundException {
-        final String testGoodHomeAbsolutePath = testHome.getAbsolutePath();
-
-        final File expected = new File(testGoodHomeAbsolutePath);
-        final File goodActual = ProjectRootFactory.getHomeFile(testGoodHomeAbsolutePath);
-        assertEquals(expected, goodActual);
-    }
-
-    @Test
-    void getOverrideXmlFile() throws IOException {
-        final File expected = new File(this.testHome, "local_config_overrides/LocalOverrides.xml");
-        final File settingsFile = ProjectRootFactory.parseLocalOverridesDir(this.testHome);
-        final File actual = ProjectRootFactory.getOverrideXmlFile(settingsFile);
-        assertEquals(expected, actual);
-    }
-
-    @Test
-    void parseLocalOverridesDir() throws IOException {
-        File expected = new File(this.testHome, "local_config_overrides");
-        File actual = ProjectRootFactory.parseLocalOverridesDir(this.testHome);
-        assertEquals(expected.getCanonicalFile(), actual.getCanonicalFile());
-    }
-
+    /**
+     * These tests don't need to duplicate the test resources-- they're not altered, here.
+     */
     @BeforeEach
     void setUpTestResourceRoot() {
         this.testHome = new TestHelpers().getTestHomeDir();
     }
 
     @Test
-    void testProjectsRootDir() throws IOException {
+    void getReadableFileHappy() throws FileNotFoundException {
+        final String testGoodHomeAbsolutePath = testHome.getAbsolutePath();
+
+        final File expected = new File(testGoodHomeAbsolutePath);
+        final File actual = ProjectRootFactory.getReadableFile(testGoodHomeAbsolutePath);
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    void getOverrideXmlFile() throws IOException {
+        final File expected = new File(this.testHome, "local_config_overrides/LocalOverrides.xml");
+        final File settingsFile = ProjectRootFactory.parseTheSettingsFile(this.testHome);
+        final File actual = ProjectRootFactory.getOverrideXmlFile(settingsFile);
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    void parseTheSettingsFile() throws IOException {
+        File expected = new File(this.testHome, "local_config_overrides");
+        File actual = ProjectRootFactory.parseTheSettingsFile(this.testHome);
+        assertEquals(expected.getCanonicalFile(), actual.getCanonicalFile());
+    }
+
+
+    @Test
+    void testDeriveProjectsRootDir() throws IOException {
         File expected = new File(testHome, "../" + TestHelpers.TEST_PROJECTS_ROOT_DIR_NAME).getCanonicalFile();
 
         final String homePath = testHome.getCanonicalPath();
-        File actual = ProjectRootFactory.projectsRootDir(homePath).getCanonicalFile();
+        File actual = ProjectRootFactory.deriveProjectsRootDir(homePath).getCanonicalFile();
 
         assertEquals(expected, actual);
     }
