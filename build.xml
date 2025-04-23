@@ -47,7 +47,7 @@
                        revision="1.82" pathid="lib.path.id"
                        inline="true"/>
         <java classname="org.example.App" fork="true"
-              args="--run-silent --client=a --project=b">
+              args="--run-silent --client='Client A' --project='Project Z' --user-home='example_home_files'">
             <classpath>
                 <path refid="lib.path.id"/>
                 <path location="${build}"/>

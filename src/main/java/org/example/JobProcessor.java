@@ -4,6 +4,7 @@ import org.example.jobcontext.JobContext;
 import org.example.util.ProjectRootFactory;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -51,6 +52,18 @@ public class JobProcessor {
         return nameCheck("Project Name", ctx.getProjectName());
     }
 
+    private String makePreRunSummaryMessage() throws IOException {
+        final int numInputFiles = numInputFiles();
+        final int numToProcess = Math.max(0, numInputFiles - ctx.getStartingSequenceNumber() + 1);
+        final String projectsRoot = getJobProjectRootDir().getCanonicalPath();
+        return "Job Project Root: " + projectsRoot +
+                "\nClient: " + ctx.getClientName() +
+                "\nProject: " + ctx.getProjectName() +
+                "\nStarting at (if any): " + ctx.getStartingSequenceNumber() +
+                "\nNum records found: " + numInputFiles +
+                "\nNum records to process: " + numToProcess;
+    }
+
     private boolean nameCheck(String nameTitle, String nameVal) {
         boolean isBad = isNullOrEmpty(nameVal);
         if (isBad) ctx.logProgress("\nThe " + nameTitle + " must not be blank.");
@@ -61,6 +74,8 @@ public class JobProcessor {
     public int numInputFiles() {
         try {
             File inputDir = new File(getJobProjectRootDir(), "Inputs");
+            if (!inputDir.exists())
+                throw new FileNotFoundException("Can't find file '" + inputDir.getCanonicalPath() + "'.");
             File[] files = inputDir.listFiles();
             return files.length;
         } catch (Exception e) {
@@ -78,17 +93,5 @@ public class JobProcessor {
         } finally {
             ctx.logProgress("=== " + LocalDateTime.now() + " ===");
         }
-    }
-
-    private String makePreRunSummaryMessage() throws IOException {
-        final int numInputFiles = numInputFiles();
-        final int numToProcess = Math.max(0, numInputFiles - ctx.getStartingSequenceNumber() + 1);
-        final String projectsRoot = getJobProjectRootDir().getCanonicalPath();
-        return "Job Project Root: " + projectsRoot +
-                "\nClient: " + ctx.getClientName() +
-                "\nProject: " + ctx.getProjectName() +
-                "\nStarting at (if any): " + ctx.getStartingSequenceNumber() +
-                "\nNum records found: " + numInputFiles +
-                "\nNum records to process: " + numToProcess;
     }
 }

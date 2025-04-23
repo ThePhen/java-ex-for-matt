@@ -8,6 +8,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 
 public class GuiAppLauncher implements Launcher {
@@ -58,7 +59,6 @@ public class GuiAppLauncher implements Launcher {
         JOptionPane.showMessageDialog(frame, e.getMessage() +
                 "\n\n" + trace, "Oh, My.", JOptionPane.ERROR_MESSAGE);
 
-        System.exit(-1);
     }
 
     private boolean isNullOrEmpty(String s) {
@@ -90,8 +90,11 @@ public class GuiAppLauncher implements Launcher {
         startProcessBtn.addActionListener(e -> {
             try {
                 new JobProcessor(guiJobContext).startProcessing();
+            } catch (IllegalArgumentException ex) {
+                guiCentricErrorHandler(new RuntimeException("Re-check the inputs and try again.", ex));
             } catch (Exception ex) {
                 guiCentricErrorHandler(new RuntimeException("Unhandled error during processing.", ex));
+                if (!(ex.getCause() instanceof FileNotFoundException)) System.exit(-1);
             }
         });
         frame.add(startProcessBtn);
@@ -102,6 +105,7 @@ public class GuiAppLauncher implements Launcher {
             buildAndStartTheGui();
         } catch (Exception e) {
             guiCentricErrorHandler(new RuntimeException("Unhandled error within the GUI.", e));
+            System.exit(-1);
         }
     }
 
