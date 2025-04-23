@@ -1,5 +1,7 @@
 package org.example.jobcontext;
 
+import java.io.IOException;
+
 public interface JobContext {
 
     String getClientName();
@@ -8,7 +10,7 @@ public interface JobContext {
 
     int getStartingSequenceNumber();
 
-    String getUserHomePath();
+    String getUserHomePath() throws IOException;
 
     boolean isRunningSilent();
 

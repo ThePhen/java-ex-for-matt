@@ -3,7 +3,7 @@ package org.example.launcher;
 import org.example.JobProcessor;
 import org.example.jobcontext.JobContext;
 
-import java.util.Objects;
+import java.io.IOException;
 
 public class HeadlessAppLauncher implements Launcher {
     private final JobContext parentContext;
@@ -12,7 +12,11 @@ public class HeadlessAppLauncher implements Launcher {
         parentContext = ctx;
     }
 
-    public void start() {
+    private boolean isNullOrEmpty(String s) {
+        return (s == null || s.trim().isEmpty());
+    }
+
+    public void start() throws IOException {
         validateNeededInputArgs();
         final JobProcessor runner = new JobProcessor(parentContext);
         runner.startProcessing();
@@ -20,12 +24,15 @@ public class HeadlessAppLauncher implements Launcher {
 
     private void validateNeededInputArgs() {
         if (parentContext.isRunningSilent() &&
-                (Objects.isNull(parentContext.getClientName()) ||
-                        Objects.isNull(parentContext.getProjectName()))) {
-            System.err.println("If running in the headless mode, at least the --client " +
+                (isNullOrEmpty(parentContext.getClientName()) ||
+                        isNullOrEmpty(parentContext.getProjectName()))) {
+            throw new IllegalArgumentException("If running in the headless mode, at least the --client " +
                     "and --project parameters must be provided. The starting sequence number " +
                     "is optional.");
-            System.exit(-1);
+//            System.err.println("If running in the headless mode, at least the --client " +
+//                    "and --project parameters must be provided. The starting sequence number " +
+//                    "is optional.");
+//            System.exit(-1);
         }
     }
 }

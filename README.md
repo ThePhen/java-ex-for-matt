@@ -9,7 +9,7 @@
 
 ## Goals
 
-* Achieve the least-change/simplest working containerization solution.
+* Achieve the simplest working containerization solution that works.
 * Demo problems and solutions for handling filepath separators (i.e. `\` vs `/`).
 * Demo configuration handling techniques.
 * Demo decoupling techniques for UI, configuration.

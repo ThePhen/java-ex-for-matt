@@ -4,8 +4,10 @@ import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
 
+import java.io.IOException;
 import java.util.Objects;
 
+@SuppressWarnings("ALL")
 public class CmdArgsJobContext implements JobContext {
 
     private final JobContext next;
@@ -36,10 +38,10 @@ public class CmdArgsJobContext implements JobContext {
     }
 
     public int getStartingSequenceNumber() {
-        return Math.min(10, Math.max(parms.startSeqNum, 1));
+        return Math.max(parms.startSeqNum, 1);
     }
 
-    public String getUserHomePath() {
+    public String getUserHomePath() throws IOException {
         if (Objects.isNull(parms.userHomePath)) return next.getUserHomePath();
         return parms.userHomePath;
     }

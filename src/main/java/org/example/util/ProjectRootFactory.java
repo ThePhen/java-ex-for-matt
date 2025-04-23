@@ -17,7 +17,7 @@ import java.nio.file.Paths;
 import java.util.List;
 
 public class ProjectRootFactory {
-    private static File getSettingsFile(File homeFile) throws IOException {
+    static File parseLocalOverridesDir(File homeFile) throws IOException {
         File rootSettingsFile = new File(homeFile, "SETTINGS.txt");
         if (!rootSettingsFile.canRead()) {
             throw new FileNotFoundException("Can not read the user's .SETTINGS.txt file " +
@@ -29,19 +29,19 @@ public class ProjectRootFactory {
                     "file ought to have a path to where the local machine's configuration overrides are written. " +
                     "The file is '" + rootSettingsFile + "'.");
         }
-        return new File(localMachineConfigs.get(0));
+        return new File(homeFile, localMachineConfigs.get(0));
     }
 
-    private static File getOverrideXmlFile(File overrideDir) throws FileNotFoundException {
+    static File getOverrideXmlFile(File overrideDir) throws FileNotFoundException {
         File xmlFile = new File(overrideDir, "LocalOverrides.xml");
-        if (!xmlFile.exists() && xmlFile.canRead()) {
+        if (!xmlFile.canRead()) {
             throw new FileNotFoundException("Can not access the user's " +
                     "local overrides XML folder ('" + xmlFile + "').");
         }
         return xmlFile;
     }
 
-    private static File getProjectsRootDirFromOverrides(File overrideDir) {
+    static File getProjectsRootDirFromOverrides(File overrideDir) {
         try {
             final File xmlFile = getOverrideXmlFile(overrideDir);
             DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
@@ -57,27 +57,27 @@ public class ProjectRootFactory {
             }
             throw new IllegalStateException("Can not determine the Project Root " +
                     "from the '" + xmlFile + "' file.");
-        } catch (ParserConfigurationException | SAXException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
+        } catch (ParserConfigurationException | SAXException | IOException e) {
             throw new RuntimeException(e);
         }
     }
 
     public static File projectsRootDir(String homePath) {
         try {
-            final File homeFile = getHomeFile(homePath);
-            final File localConfigOverrideFile = getSettingsFile(homeFile);
-            return getProjectsRootDirFromOverrides(localConfigOverrideFile);
+            final File homeDir = getHomeFile(homePath);
+            final File localConfigOverrideFile = parseLocalOverridesDir(homeDir);
+            final File projectsRootDirFromOverrides = getProjectsRootDirFromOverrides(localConfigOverrideFile);
+            return new File(homeDir, projectsRootDirFromOverrides.getPath());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
-    private static File getHomeFile(String homePath) throws FileNotFoundException {
+    public static File getHomeFile(String homePath) throws FileNotFoundException {
         Path home = Paths.get(homePath);
         File homeFile = home.toFile();
-        if (!homeFile.exists() && homeFile.canRead()) {
+
+        if (!homeFile.canRead()) {
             throw new FileNotFoundException("Can not access the user's HOME folder ('" + homeFile + "').");
         }
         return homeFile;

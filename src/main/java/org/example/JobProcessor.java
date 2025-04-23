@@ -4,6 +4,7 @@ import org.example.jobcontext.JobContext;
 import org.example.util.ProjectRootFactory;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
@@ -24,7 +25,7 @@ public class JobProcessor {
         return a && b;
     }
 
-    private File getJobProjectRootDir() {
+    private File getJobProjectRootDir() throws IOException {
         final String path = getProjectsRootDir().getPath();
         final String clientName = ctx.getClientName();
         final String projectName = ctx.getProjectName();
@@ -32,7 +33,7 @@ public class JobProcessor {
         return outputPath.toFile();
     }
 
-    private File getProjectsRootDir() {
+    private File getProjectsRootDir() throws IOException {
         if (!Objects.isNull(cachedProjectsRootDir)) return cachedProjectsRootDir;
         cachedProjectsRootDir = ProjectRootFactory.projectsRootDir(ctx.getUserHomePath());
         return cachedProjectsRootDir;
@@ -56,27 +57,38 @@ public class JobProcessor {
         return !isBad;
     }
 
-    private int numInputFiles() {
+    @SuppressWarnings("DataFlowIssue")
+    public int numInputFiles() {
         try {
             File inputDir = new File(getJobProjectRootDir(), "Inputs");
-            return inputDir.listFiles().length;
+            File[] files = inputDir.listFiles();
+            return files.length;
         } catch (Exception e) {
             throw new RuntimeException("Trouble trying to count the number of record files for the project.", e);
         }
     }
 
-    public void startProcessing() {
+    public void startProcessing() throws IOException {
         // NOTE: This would be much more complicated. It's where the real work begins.
         try {
             ctx.logProgress("=== " + LocalDateTime.now() + " ===");
             if (!areInputsGood()) throw new IllegalArgumentException("The input configuration is flawed. See above.");
-            String msg = "Job Project Root (" + numInputFiles() + " Records found): " + getJobProjectRootDir() +
-                    "\nClient: " + ctx.getClientName() +
-                    "\nProject: " + ctx.getProjectName() +
-                    "\nStarting at (if any): " + ctx.getStartingSequenceNumber();
+            final String msg = makePreRunSummaryMessage();
             ctx.logProgress(msg);
         } finally {
             ctx.logProgress("=== " + LocalDateTime.now() + " ===");
         }
+    }
+
+    private String makePreRunSummaryMessage() throws IOException {
+        final int numInputFiles = numInputFiles();
+        final int numToProcess = Math.max(0, numInputFiles - ctx.getStartingSequenceNumber() + 1);
+        final String projectsRoot = getJobProjectRootDir().getCanonicalPath();
+        return "Job Project Root: " + projectsRoot +
+                "\nClient: " + ctx.getClientName() +
+                "\nProject: " + ctx.getProjectName() +
+                "\nStarting at (if any): " + ctx.getStartingSequenceNumber() +
+                "\nNum records found: " + numInputFiles +
+                "\nNum records to process: " + numToProcess;
     }
 }

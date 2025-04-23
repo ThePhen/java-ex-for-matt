@@ -8,6 +8,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.IOException;
 
 public class GuiAppLauncher implements Launcher {
     private final GuiJobContext guiJobContext;
@@ -134,7 +135,7 @@ public class GuiAppLauncher implements Launcher {
             }
         }
 
-        public String getUserHomePath() {
+        public String getUserHomePath() throws IOException {
             return next.getUserHomePath();
         }
 
