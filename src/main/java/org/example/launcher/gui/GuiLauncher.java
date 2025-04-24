@@ -5,7 +5,6 @@ import org.example.jobcontext.JobContext;
 import org.example.launcher.Launcher;
 import org.example.util.StringUtils;
 
-import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -13,7 +12,6 @@ import java.io.IOException;
 public class GuiLauncher implements Launcher {
     private final GuiJobContext ctx;
     private final JobContext parentCtx;
-    private Frame frame;
     private JobStarterUi jobStarterUi;
 
     public GuiLauncher(JobContext next) {
@@ -35,7 +33,7 @@ public class GuiLauncher implements Launcher {
 
     public void start() {
         try {
-            jobStarterUi = new JobStarterUi(this);
+            jobStarterUi = new JobStarterUi();
             jobStarterUi.buildTheGui(parentCtx, this::startProcessing);
             jobStarterUi.startTheGui();
         } catch (Exception e) {

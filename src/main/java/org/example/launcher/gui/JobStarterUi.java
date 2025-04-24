@@ -12,16 +12,11 @@ import java.awt.event.WindowEvent;
 
 class JobStarterUi {
 
-    private final GuiLauncher guiLauncher;
-    TextField projectName;
-    TextField startSeqNum;
+    TextField projectName = null;
+    TextField startSeqNum = null;
     TextArea progressDisplay;
     TextField clientName;
     private Frame frame;
-
-    public JobStarterUi(GuiLauncher guiLauncher) {
-        this.guiLauncher = guiLauncher;
-    }
 
     public void buildTheGui(JobContext nextCtx, ActionListener onStartButton) {
         frame = new Frame("Label and TextField Example");
