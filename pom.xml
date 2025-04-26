@@ -38,7 +38,7 @@
     </dependencies>
 
     <build>
-        <pluginManagement><!-- lock down plugins versions to avoid using Maven defaults (maybe moved to parent pom) -->
+        <pluginManagement><!-- lock down plugin versions to avoid using Maven defaults (maybe moved to parent pom) -->
             <plugins>
                 <plugin>
                     <groupId>org.jacoco</groupId>

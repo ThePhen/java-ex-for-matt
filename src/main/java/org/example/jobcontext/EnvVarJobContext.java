@@ -1,6 +1,5 @@
 package org.example.jobcontext;
 
-import java.text.ParseException;
 import java.util.Objects;
 
 public class EnvVarJobContext implements JobContext {
@@ -18,40 +17,40 @@ public class EnvVarJobContext implements JobContext {
 
     @Override
     public String getClientName() {
-        String c = env.get("EX_CLIENT");
-        if (Objects.nonNull(c)) return c;
+        String val = env.get("EX_CLIENT");
+        if (Objects.nonNull(val)) return val;
         return next.getClientName();
     }
 
     @Override
     public String getProjectName() {
-        String c = env.get("EX_PROJECT");
-        if (Objects.nonNull(c)) return c;
+        String val = env.get("EX_PROJECT");
+        if (Objects.nonNull(val)) return val;
         return next.getProjectName();
     }
 
     @Override
     public int getStartingSequenceNumber() {
         try {
-            String c = env.get("EX_START_SEQ_NUM");
-            if (Objects.nonNull(c)) return Integer.parseInt(c);
+            String val = env.get("EX_START_SEQ_NUM");
+            if (Objects.nonNull(val)) return Integer.parseInt(val);
             return next.getStartingSequenceNumber();
         } catch (Exception ex) {
-            throw new Invalid("Trouble handline the value in env-var EX_START_SEQ_NUM.", ex);
+            throw new IllegalArgumentException("Trouble handling the value in env-var EX_START_SEQ_NUM.", ex);
         }
     }
 
     @Override
     public String getUserHomePath() {
-        String c = env.get("EX_USER_HOME");
-        if (Objects.nonNull(c)) return c;
+        String val = env.get("EX_USER_HOME");
+        if (Objects.nonNull(val)) return val;
         return next.getClientName();
     }
 
     public boolean isRunningSilent() {
         try {
-            String c = env.get("EX_RUN_SILENT");
-            if (Objects.nonNull(c)) return Boolean.parseBoolean(c);
+            String val = env.get("EX_RUN_SILENT");
+            if (Objects.nonNull(val)) return Boolean.parseBoolean(val);
             return next.isRunningSilent();
         } catch (Exception ex) {
             throw new RuntimeException("Trouble handling the value in the env-var EX_RUN_SILENT.", ex);
@@ -64,6 +63,7 @@ public class EnvVarJobContext implements JobContext {
 
     @FunctionalInterface
     public interface GetEnv {
+        @SuppressWarnings("unused")
         String get(String name);
     }
 }

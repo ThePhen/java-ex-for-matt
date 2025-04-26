@@ -13,7 +13,7 @@ class AppTest {
 
     /**
      * testBadHeadlessConfigRaisesError checks that a specific exception is thrown when the headless
-     * runner can't find necessary parameters.
+     * runner can't find the necessary parameters.
      */
     @Test
     void testBadHeadlessConfigRaisesError() {
@@ -39,7 +39,7 @@ class AppTest {
     }
 
     /**
-     * testStartsInGuiWithBlankishConfig expects that the given no args, from `java org.example.App` for example,
+     * testStartsInGuiWithBlankishConfig expects that the given no args, from `java org.example.App`, for example,
      * it will starts up as if the user will then make inputs, start processing, etc.
      * <p>
      * It really just checks that the GUI can start.

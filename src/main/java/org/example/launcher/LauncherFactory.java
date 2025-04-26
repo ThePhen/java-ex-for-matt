@@ -7,10 +7,17 @@ import org.example.jobcontext.JobContext;
 import org.example.launcher.gui.GuiLauncher;
 import org.example.launcher.headless.HeadlessLauncher;
 
+import java.io.IOException;
+
 public enum LauncherFactory {
     ;
 
-    public static Launcher make(String[] args) {
+    public static void makeAndStart(String[] args) throws IOException {
+        Launcher launcher = make(args);
+        launcher.start();
+    }
+
+    static Launcher make(String[] args) {
         JobContext baseCtx = new BaseJobContext();
         JobContext envCtx = new EnvVarJobContext(baseCtx);
         JobContext ctx = new CmdArgsJobContext(args, envCtx);

@@ -3,7 +3,6 @@ package org.example;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.function.Consumer;
@@ -21,20 +20,19 @@ public class TestHelpers {
      * <p>
      * Sometimes the files will already exist, so we're swallowing the error that occurs when that happens.
      *
-     * @param sourceDirectoryLocation      the root directory whose contents will be duplicated
-     * @param destinationDirectoryLocation the root directory into which the duplicates will be placed.
+     * @param sourceDirectory      the root directory whose contents will be duplicated
+     * @param destinationDirectory the root directory into which the duplicates will be placed.
      * @throws IOException
      */
-    private static void copyDirectory(String sourceDirectoryLocation, String destinationDirectoryLocation)
+    private static void copyDirectory(String sourceDirectory, String destinationDirectory)
             throws IOException {
-        //noinspection resource
-        Consumer<Path> copier = new Copier(destinationDirectoryLocation, sourceDirectoryLocation);
-        walk(Paths.get(sourceDirectoryLocation)).forEach(copier);
+        Consumer<Path> copier = new Copier(destinationDirectory, sourceDirectory);
+        walk(Paths.get(sourceDirectory)).forEach(copier);
     }
 
     /**
      * makeTempTestResourcesCopy is intended to duplicate the test-specific 'home' and 'projects root'
-     * files and directories into the testResourceCopyRoot directory, provided. It creates the needed
+     * files and directories into the testResourceCopyRoot directory, provided. It creates the necessary
      * 'home' and 'projects root' sub-dirs, and populates them.
      *
      * @param origTestHome         the location of the test-time assets to duplicate
@@ -69,34 +67,11 @@ public class TestHelpers {
      * @return File where the test-time assets can be found.
      */
     @SuppressWarnings("DataFlowIssue")
-    public File getTestHomeDir() {
-        ClassLoader classLoader = getClass().getClassLoader();
+    public static File getTestHomeDir() {
+        ClassLoader classLoader = TestHelpers.class.getClassLoader();
         URL testHomeUrl = classLoader.getResource(TEST_HOME_DIR_NAME);
         String testHomeFilePath = testHomeUrl.getFile();
         return new File(testHomeFilePath);
     }
 
-    private static class Copier implements Consumer<Path> {
-        private final String destinationDirectoryLocation;
-        private final String sourceDirectoryLocation;
-
-        Copier(String destinationDirectoryLocation, String sourceDirectoryLocation) {
-            this.destinationDirectoryLocation = destinationDirectoryLocation;
-            this.sourceDirectoryLocation = sourceDirectoryLocation;
-        }
-
-        @Override
-        public void accept(Path source) {
-            Path destination = Paths.get(destinationDirectoryLocation, source.toString()
-                    .substring(sourceDirectoryLocation.length()));
-            try {
-                Files.copy(source, destination);
-            } catch (java.nio.file.FileAlreadyExistsException e) {
-                // noop
-            } catch (IOException e) {
-                System.err.println("Swallowing IOException while duplicating a directory. " +
-                        "IOException was: " + e.getMessage());
-            }
-        }
-    }
 }

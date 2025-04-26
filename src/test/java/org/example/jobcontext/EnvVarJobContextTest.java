@@ -8,7 +8,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class EnvVarJobContextTest {
 
-    private final String NONCE = "";
+    private static final String NONCE = "";
 
     private static String get(String name) {
         if ("EX_START_SEQ_NUM".equals(name)) return "-9";
@@ -57,7 +57,7 @@ class EnvVarJobContextTest {
         TrackIfEverCalledJobContext testParentCtx = new TrackIfEverCalledJobContext();
         JobContext ctx = new EnvVarJobContext(testParentCtx);
 
-        // ignore the return vals. Just check that each call went 'up' to the parent ctx.
+        // ignore the return vals. Check that each call went 'up' to the parent ctx.
         ctx.getClientName();
         assertTrue(testParentCtx.ctxWasCalled);
 
