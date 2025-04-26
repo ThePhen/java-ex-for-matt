@@ -5,7 +5,7 @@
     <option name="PROGRAM_PARAMETERS" value="--run-silent --client=&quot;Client A&quot; --project=&quot;Project Y&quot; -s 2 --user-home=./example_home_files" />
     <extension name="coverage">
       <pattern>
-        <option name="PATTERN" value="org.example.launcher.*" />
+        <option name="PATTERN" value="org.example.launcher.gui.*" />
         <option name="ENABLED" value="true" />
       </pattern>
     </extension>
