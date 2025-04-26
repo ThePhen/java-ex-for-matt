@@ -13,8 +13,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class TestHelpers {
 
-    public static final String TEST_HOME_DIR_NAME = "test_home_files";
     public static final String TEST_PROJECTS_ROOT_DIR_NAME = "test_projects_root";
+    private static final String TEST_HOME_DIR_NAME = "test_home_files";
 
     /**
      * copyDirectory duplicates the contents of the sourceDirectoryLocation into the destinationDirectoryLocation.
@@ -25,10 +25,10 @@ public class TestHelpers {
      * @param destinationDirectoryLocation the root directory into which the duplicates will be placed.
      * @throws IOException
      */
-    public static void copyDirectory(String sourceDirectoryLocation, String destinationDirectoryLocation)
+    private static void copyDirectory(String sourceDirectoryLocation, String destinationDirectoryLocation)
             throws IOException {
         //noinspection resource
-        final Copier copier = new Copier(destinationDirectoryLocation, sourceDirectoryLocation);
+        Consumer<Path> copier = new Copier(destinationDirectoryLocation, sourceDirectoryLocation);
         walk(Paths.get(sourceDirectoryLocation)).forEach(copier);
     }
 
@@ -71,8 +71,8 @@ public class TestHelpers {
     @SuppressWarnings("DataFlowIssue")
     public File getTestHomeDir() {
         ClassLoader classLoader = getClass().getClassLoader();
-        final URL testHomeUrl = classLoader.getResource(TEST_HOME_DIR_NAME);
-        final String testHomeFilePath = testHomeUrl.getFile();
+        URL testHomeUrl = classLoader.getResource(TEST_HOME_DIR_NAME);
+        String testHomeFilePath = testHomeUrl.getFile();
         return new File(testHomeFilePath);
     }
 
@@ -80,7 +80,7 @@ public class TestHelpers {
         private final String destinationDirectoryLocation;
         private final String sourceDirectoryLocation;
 
-        public Copier(String destinationDirectoryLocation, String sourceDirectoryLocation) {
+        Copier(String destinationDirectoryLocation, String sourceDirectoryLocation) {
             this.destinationDirectoryLocation = destinationDirectoryLocation;
             this.sourceDirectoryLocation = sourceDirectoryLocation;
         }

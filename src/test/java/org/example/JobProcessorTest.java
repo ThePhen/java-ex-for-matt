@@ -8,7 +8,8 @@ import org.junit.jupiter.api.io.TempDir;
 import java.io.File;
 import java.io.IOException;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class JobProcessorTest {
 
@@ -16,7 +17,7 @@ class JobProcessorTest {
     private static final String PROJECT = "Project Y";
     private static final int START_SEQ_NUM = 3;
 
-    static JobContext ctx;
+    private static JobContext ctx;
 
     @TempDir
     private static File tempRoot;
@@ -30,48 +31,50 @@ class JobProcessorTest {
 
         tempTestHome = TestHelpers.makeTempTestResourcesCopy(origTestHome, tempRoot);
 
-        ctx = new JobContext() {
-            @Override
-            public String getClientName() {
-                return CLIENT;
-            }
-
-            @Override
-            public String getProjectName() {
-                return PROJECT;
-            }
-
-            @Override
-            public int getStartingSequenceNumber() {
-                return START_SEQ_NUM;
-            }
-
-            @Override
-            public String getUserHomePath() throws IOException {
-                return tempTestHome.getCanonicalPath();
-            }
-
-            @Override
-            public boolean isRunningSilent() {
-                return true;
-            }
-
-            @Override
-            public void logProgress(String message) {
-                System.out.println(message);
-            }
-        };
+        ctx = new SimpleJobContext();
 
         processor = new JobProcessor(ctx);
     }
 
     @Test
-    void testNumInputFiles() {
+    void testNumInputFiles() throws IOException {
         assertEquals(5, processor.numInputFiles());
     }
 
     @Test
     void testProcessingHappyPath() {
         assertDoesNotThrow(() -> processor.startProcessing());
+    }
+
+    private static class SimpleJobContext implements JobContext {
+        @Override
+        public String getClientName() {
+            return CLIENT;
+        }
+
+        @Override
+        public String getProjectName() {
+            return PROJECT;
+        }
+
+        @Override
+        public int getStartingSequenceNumber() {
+            return START_SEQ_NUM;
+        }
+
+        @Override
+        public String getUserHomePath() throws IOException {
+            return tempTestHome.getCanonicalPath();
+        }
+
+        @Override
+        public boolean isRunningSilent() {
+            return true;
+        }
+
+        @Override
+        public void logProgress(String message) {
+            System.out.println(message);
+        }
     }
 }

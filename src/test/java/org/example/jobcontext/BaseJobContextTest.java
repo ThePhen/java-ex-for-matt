@@ -2,13 +2,14 @@ package org.example.jobcontext;
 
 import org.junit.jupiter.api.Test;
 
+import java.io.IOException;
+
 import static org.junit.jupiter.api.Assertions.*;
 
-public class BaseJobContextTest {
+class BaseJobContextTest {
     @Test
-    public void testHappyPath() {
-        final BaseJobContext ctx = new BaseJobContext();
-
+    void testHappyPath() throws IOException {
+        JobContext ctx = new BaseJobContext();
         assertNotNull(ctx.getClientName());
         assertNotNull(ctx.getProjectName());
         assertEquals(1, ctx.getStartingSequenceNumber());

@@ -2,6 +2,7 @@ package org.example.util;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
@@ -16,7 +17,9 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 
-public class ProjectRootFactory {
+public enum ProjectRootFactory {
+    ;
+
     /**
      * parseTheSettingsFile reads the SETTINGS.txt file, and returns a handle to the location
      * of the overrids dir, where override XML files are held.
@@ -32,7 +35,7 @@ public class ProjectRootFactory {
                     "(" + rootSettingsFile.getAbsolutePath() + ").");
         }
         List<String> localMachineConfigs = Files.readAllLines(rootSettingsFile.toPath());
-        if (localMachineConfigs.size() != 1) {
+        if (1 != localMachineConfigs.size()) {
             throw new IllegalArgumentException("The .SETTINGS.txt file doesn't parse correctly. The only line in the " +
                     "file ought to have a path to where the local machine's configuration overrides are written. " +
                     "The file is '" + rootSettingsFile + "'.");
@@ -63,39 +66,53 @@ public class ProjectRootFactory {
      * @param overrideDir the location of the directory where the XML file that points to the 'projects root' is at
      * @return the final location of the 'projects root', as configured
      */
-    static File getProjectsRootDirFromOverrides(File overrideDir) {
+    private static File getProjectsRootDirFromOverrides(File overrideDir) {
         try {
-            final File xmlFile = getOverrideXmlFile(overrideDir);
-            DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-            DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-            Document doc = dBuilder.parse(xmlFile);
-            doc.getDocumentElement().normalize();
+            File xmlFile = getOverrideXmlFile(overrideDir);
+            Document doc = parseXmlFileIntoDom(xmlFile);
 
-            NodeList nodeList = doc.getElementsByTagName("ProjectRoot");
-            if (nodeList.getLength() > 0) {
-                Element element = (Element) nodeList.item(0);
-                final String body = element.getTextContent().trim();
-                return new File(body);
+            String body = getBodyOfFirstMatchingNode(doc, "ProjectRoot");
+            File out = new File(body);
+            if (null != out) {
+                return out;
             }
             throw new IllegalStateException("Can not determine the Project Root " +
                     "from the '" + xmlFile + "' file.");
-        } catch (ParserConfigurationException | SAXException | IOException e) {
-            throw new RuntimeException(e);
+        } catch (ParserConfigurationException | SAXException | IOException ex) {
+            throw new RuntimeException(ex);
         }
+    }
+
+    private static String getBodyOfFirstMatchingNode(Document doc, String tagname) {
+        NodeList nodeList = doc.getElementsByTagName(tagname);
+        if (0 < nodeList.getLength()) {
+            Node element = nodeList.item(0);
+            String body = element.getTextContent().trim();
+            return body;
+        }
+        return null;
+    }
+
+    private static Document parseXmlFileIntoDom(File xmlFile) throws ParserConfigurationException, SAXException, IOException {
+        DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+        Document doc = dBuilder.parse(xmlFile);
+        doc.getDocumentElement().normalize();
+        return doc;
     }
 
     /**
      * deriveProjectsRootDir follows a set of files, starting in the user's home, to find out where
-     * the 'projects root' is at (that is where the Client and Project files should be located.
+     * the 'projects root' is at (i.e. where the Client and Project Input files should be found).
      *
      * @param homePath the location of the user's home
      * @return the location of the 'projects root'
      */
     public static File deriveProjectsRootDir(String homePath) {
         try {
-            final File homeDir = getReadableFile(homePath);
-            final File localConfigOverrideFile = parseTheSettingsFile(homeDir);
-            final File projectsRootDirFromOverrides = getProjectsRootDirFromOverrides(localConfigOverrideFile);
+            File homeDir = getReadableFile(homePath);
+            File localConfigOverrideFile = parseTheSettingsFile(homeDir);
+            File projectsRootDirFromOverrides = getProjectsRootDirFromOverrides(localConfigOverrideFile);
             return new File(homeDir, projectsRootDirFromOverrides.getPath());
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -110,7 +127,7 @@ public class ProjectRootFactory {
      * @return a known-readable File object pointing to the input path
      * @throws FileNotFoundException
      */
-    public static File getReadableFile(String path) throws FileNotFoundException {
+    static File getReadableFile(String path) throws FileNotFoundException {
         Path home = Paths.get(path);
         File homeFile = home.toFile();
 

@@ -31,7 +31,7 @@ class AppTest {
     @Test
     void testIdealHeadlessRun(@TempDir File tempResourcesCopy) throws IOException {
         File testHome = new TestHelpers().getTestHomeDir();
-        final File tempTestHome = TestHelpers.makeTempTestResourcesCopy(testHome, tempResourcesCopy);
+        File tempTestHome = TestHelpers.makeTempTestResourcesCopy(testHome, tempResourcesCopy);
 
         assertDoesNotThrow(() -> App.main(new String[]{"--run-silent",
                 "-c=Client A", "-p=Project Y", "-s=2",

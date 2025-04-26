@@ -5,13 +5,13 @@ import org.example.launcher.LauncherFactory;
 
 import java.io.IOException;
 
-public class App {
-    public static void main(String[] args) {
-        Launcher w = LauncherFactory.make(args);
-        try {
-            w.start();
-        } catch (IOException e) {
-            throw new RuntimeException("Unexpected IO Exception under main entry point.", e);
-        }
+class App {
+    public static void main(String[] args) throws IOException {
+        new App().start(args);
+    }
+
+    private void start(String[] args) throws IOException {
+        Launcher worker = LauncherFactory.make(args);
+        worker.start();
     }
 }

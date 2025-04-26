@@ -5,12 +5,11 @@ import org.example.jobcontext.JobContext;
 import org.example.launcher.Launcher;
 import org.example.util.StringUtils;
 
-import java.awt.event.ActionEvent;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
 public class GuiLauncher implements Launcher {
-    private final GuiJobContext ctx;
+    private final JobContext ctx;
     private final JobContext parentCtx;
     private JobStarterUi jobStarterUi;
 
@@ -19,9 +18,20 @@ public class GuiLauncher implements Launcher {
         ctx = new GuiJobContext(next);
     }
 
-    private void startProcessing(ActionEvent e) {
+    public void start() {
         try {
-            final JobProcessor job = new JobProcessor(ctx);
+            jobStarterUi = new JobStarterUi();
+            jobStarterUi.buildTheGui(parentCtx, e -> startProcessing());
+            jobStarterUi.startTheGui();
+        } catch (Exception e) {
+            jobStarterUi.displayError(ctx, new RuntimeException("Unhandled error within the GUI.", e));
+            System.exit(-1);
+        }
+    }
+
+    private void startProcessing() {
+        try {
+            JobProcessor job = new JobProcessor(ctx);
             job.startProcessing();
         } catch (IllegalArgumentException ex) {
             jobStarterUi.displayError(ctx, new RuntimeException("Re-check the inputs and try again.", ex));
@@ -31,21 +41,10 @@ public class GuiLauncher implements Launcher {
         }
     }
 
-    public void start() {
-        try {
-            jobStarterUi = new JobStarterUi();
-            jobStarterUi.buildTheGui(parentCtx, this::startProcessing);
-            jobStarterUi.startTheGui();
-        } catch (Exception e) {
-            jobStarterUi.displayError(ctx, new RuntimeException("Unhandled error within the GUI.", e));
-            System.exit(-1);
-        }
-    }
-
     private class GuiJobContext implements JobContext {
         final JobContext next;
 
-        public GuiJobContext(JobContext next) {
+        GuiJobContext(JobContext next) {
             this.next = next;
         }
 
@@ -55,13 +54,13 @@ public class GuiLauncher implements Launcher {
         }
 
         public String getProjectName() {
-            final String s = jobStarterUi.projectName.getText();
+            String s = jobStarterUi.projectName.getText();
             if (StringUtils.isNullOrEmpty(s)) return next.getProjectName();
             return s.trim();
         }
 
         public int getStartingSequenceNumber() {
-            final String fieldText = jobStarterUi.startSeqNum.getText();
+            String fieldText = jobStarterUi.startSeqNum.getText();
             if (StringUtils.isNullOrEmpty(fieldText)) return next.getStartingSequenceNumber();
             try {
                 return Integer.parseInt(fieldText);

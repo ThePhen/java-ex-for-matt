@@ -1,8 +1,10 @@
 package org.example.util;
 
 @SuppressWarnings("ClassUnconnectedToPackage")
-public class StringUtils {
+public enum StringUtils {
+    ;
+
     public static boolean isNullOrEmpty(String s) {
-        return (s == null || s.trim().isEmpty());
+        return (null == s || s.trim().isEmpty());
     }
 }

@@ -11,8 +11,8 @@ class EnvVarJobContextTest {
     private final String NONCE = "";
 
     private static String get(String name) {
-        if (name.equals("EX_START_SEQ_NUM")) return "-9";
-        if (name.equals("EX_RUN_SILENT")) return "TRUE";
+        if ("EX_START_SEQ_NUM".equals(name)) return "-9";
+        if ("EX_RUN_SILENT".equals(name)) return "TRUE";
         return name;
     }
 
@@ -49,6 +49,7 @@ class EnvVarJobContextTest {
      * testPassthroughs expects that none of the various `EX_*` environment variables are set, and checks
      * that EnvVarJobContext will delegate its getters to the parent JobContext (which is a test-related
      * JobContext implementation written to support this kind of test).
+     *
      * @throws IOException
      */
     @Test

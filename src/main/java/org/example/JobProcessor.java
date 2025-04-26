@@ -21,16 +21,16 @@ public class JobProcessor {
 
     private boolean areInputsGood() {
         //run both checks — side-stepping short-circuit eval
-        final boolean a = isClientNameGood();
-        final boolean b = isProjectNameGood();
+        boolean a = isClientNameGood();
+        boolean b = isProjectNameGood();
         return a && b;
     }
 
     private File getJobProjectRootDir() throws IOException {
-        final String path = getProjectsRootDir().getPath();
-        final String clientName = ctx.getClientName();
-        final String projectName = ctx.getProjectName();
-        final Path outputPath = Paths.get(path, clientName, projectName);
+        String path = getProjectsRootDir().getPath();
+        String clientName = ctx.getClientName();
+        String projectName = ctx.getProjectName();
+        Path outputPath = Paths.get(path, clientName, projectName);
         return outputPath.toFile();
     }
 
@@ -45,7 +45,7 @@ public class JobProcessor {
     }
 
     private boolean isNullOrEmpty(String s) {
-        return (s == null || s.trim().isEmpty());
+        return (null == s || s.trim().isEmpty());
     }
 
     private boolean isProjectNameGood() {
@@ -53,9 +53,9 @@ public class JobProcessor {
     }
 
     private String makePreRunSummaryMessage() throws IOException {
-        final int numInputFiles = numInputFiles();
-        final int numToProcess = Math.max(0, numInputFiles - ctx.getStartingSequenceNumber() + 1);
-        final String projectsRoot = getJobProjectRootDir().getCanonicalPath();
+        int numInputFiles = numInputFiles();
+        int numToProcess = Math.max(0, numInputFiles - ctx.getStartingSequenceNumber() + 1);
+        String projectsRoot = getJobProjectRootDir().getCanonicalPath();
         return "Job Project Root: " + projectsRoot +
                 "\nClient: " + ctx.getClientName() +
                 "\nProject: " + ctx.getProjectName() +
@@ -71,16 +71,13 @@ public class JobProcessor {
     }
 
     @SuppressWarnings("DataFlowIssue")
-    public int numInputFiles() {
-        try {
-            File inputDir = new File(getJobProjectRootDir(), "Inputs");
-            if (!inputDir.exists())
-                throw new FileNotFoundException("Can't find file '" + inputDir.getCanonicalPath() + "'.");
-            File[] files = inputDir.listFiles();
-            return files.length;
-        } catch (Exception e) {
-            throw new RuntimeException("Trouble trying to count the number of record files for the project.", e);
-        }
+    public int numInputFiles() throws IOException {
+        File projectRootDir = getJobProjectRootDir();
+        File inputDir = new File(projectRootDir, "Inputs");
+        if (!inputDir.exists())
+            throw new FileNotFoundException("Can't find file '" + inputDir.getCanonicalPath() + "'.");
+        File[] files = inputDir.listFiles();
+        return files.length;
     }
 
     public void startProcessing() throws IOException {
@@ -88,7 +85,7 @@ public class JobProcessor {
         try {
             ctx.logProgress("=== " + LocalDateTime.now() + " ===");
             if (!areInputsGood()) throw new IllegalArgumentException("The input configuration is flawed. See above.");
-            final String msg = makePreRunSummaryMessage();
+            String msg = makePreRunSummaryMessage();
             ctx.logProgress(msg);
         } finally {
             ctx.logProgress("=== " + LocalDateTime.now() + " ===");

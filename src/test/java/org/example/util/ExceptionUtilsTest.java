@@ -8,7 +8,7 @@ class ExceptionUtilsTest {
     @Test
     void testHappyPath() {
         Exception testEx = new RuntimeException("ZZZZ_TEST_ZZZZ");
-        final String stackTraceAsString = ExceptionUtils.getStackTraceAsString(testEx);
-        assertTrue(stackTraceAsString.indexOf("ZZZZ_TEST_ZZZZ") > 0);
+        String stackTraceAsString = ExceptionUtils.getStackTraceAsString(testEx);
+        assertTrue(0 < stackTraceAsString.indexOf("ZZZZ_TEST_ZZZZ"));
     }
 }

@@ -3,7 +3,9 @@ package org.example.util;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
-public class ExceptionUtils {
+public enum ExceptionUtils {
+    ;
+
     public static String getStackTraceAsString(Exception e) {
         try {
             StringWriter sw = new StringWriter();

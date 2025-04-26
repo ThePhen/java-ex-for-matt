@@ -12,8 +12,8 @@ import java.awt.event.WindowEvent;
 
 class JobStarterUi {
 
-    TextField projectName = null;
-    TextField startSeqNum = null;
+    TextField projectName;
+    TextField startSeqNum;
     TextArea progressDisplay;
     TextField clientName;
     private Frame frame;
@@ -24,7 +24,7 @@ class JobStarterUi {
         clientName = makeNewTextField("Client: ", nextCtx.getClientName());
         projectName = makeNewTextField("Project: ", nextCtx.getProjectName());
 
-        final String seqNumAsString = "" + nextCtx.getStartingSequenceNumber();
+        String seqNumAsString = "" + nextCtx.getStartingSequenceNumber();
         startSeqNum = makeNewTextField("Start Sequence Num: ", seqNumAsString);
 
         makeTheStartButton(onStartButton);
@@ -44,11 +44,12 @@ class JobStarterUi {
     }
 
     private TextField makeNewTextField(String labelText, String defaultText) {
-        final TextField field = makeNewTextField(labelText);
+        TextField field = makeNewTextField(labelText);
         if (!StringUtils.isNullOrEmpty(defaultText)) field.setText(defaultText);
         return field;
     }
 
+    @SuppressWarnings("MagicNumber")
     private TextField makeNewTextField(String labelText) {
         Label clientLabel = new Label(labelText);
         frame.add(clientLabel);
@@ -69,6 +70,7 @@ class JobStarterUi {
         frame.add(startProcessBtn);
     }
 
+    @SuppressWarnings("MagicNumber")
     void startTheGui() {
         frame.setSize(600, 800);
         frame.setLayout(new FlowLayout());

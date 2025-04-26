@@ -6,19 +6,21 @@ import java.io.IOException;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class CmdArgsJobContextTest {
+class CmdArgsJobContextTest {
 
-    /** testHeppyPath checks that when provided sufficient input commmandline args,
+    /**
+     * testHeppyPath checks that when provided sufficient input commmandline args,
      * that CmdArgsJobContext does not delegate to its parent context. Note that logProgress,
      * on the other hand, is meant to use delegation, however.
      *
      * @throws IOException
      */
+    @SuppressWarnings("MagicNumber")
     @Test
-    public void testHappyPath() throws IOException {
+    void testHappyPath() throws IOException {
 
         String[] testArgs = {
-                "-run-silent",
+                "-r",
                 "-c", "client",
                 "-p", "project",
                 "-s", "99",

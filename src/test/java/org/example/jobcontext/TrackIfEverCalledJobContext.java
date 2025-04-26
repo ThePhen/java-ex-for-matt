@@ -6,8 +6,8 @@ package org.example.jobcontext;
  */
 class TrackIfEverCalledJobContext implements JobContext {
 
-    public final String NONCE = "";
-    public boolean ctxWasCalled = false;
+    private final String NONCE = "";
+    public boolean ctxWasCalled;
 
     @Override
     public String getClientName() {

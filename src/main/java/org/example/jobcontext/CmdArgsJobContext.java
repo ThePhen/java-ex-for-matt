@@ -56,7 +56,7 @@ public class CmdArgsJobContext implements JobContext {
 
     @Parameters(separators = "=")
     static class ParmsFromCommandLine {
-        @Parameter(names = {"-run-silent", "--run-silent"}, description = "When this flag is present, the job will " +
+        @Parameter(names = {"-r", "--run-silent"}, description = "When this flag is present, the job will " +
                 "run without any user intervention required. Used for job automation.")
         private boolean runSilent = false;
 
@@ -69,7 +69,7 @@ public class CmdArgsJobContext implements JobContext {
         @Parameter(names = {"-s", "--start-num"}, description = "The sequence number of the first record to process")
         private int startSeqNum = 1;
 
-        @Parameter(names = {"--user-home"}, description = "The path to the user's home. By default, the value " +
+        @Parameter(names = {"-u", "--user-home"}, description = "The path to the user's home. By default, the value " +
                 "the OS provides is used.")
         private String userHomePath = null;
 

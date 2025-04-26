@@ -14,15 +14,15 @@ class LauncherFactoryTest {
 
     @Test
     void testMakeLoud() {
-        final String[] loadArgs = {};
-        final Launcher loudLauncher = LauncherFactory.make(loadArgs);
+        String[] loadArgs = {};
+        Launcher loudLauncher = LauncherFactory.make(loadArgs);
         assertEquals(GuiLauncher.class, loudLauncher.getClass());
     }
 
     @Test
     void testMakeSilent() {
-        final String[] silentArgs = {"-run-silent"};
-        final Launcher silentLauncher = LauncherFactory.make(silentArgs);
+        String[] silentArgs = {"-r"};
+        Launcher silentLauncher = LauncherFactory.make(silentArgs);
         assertEquals(HeadlessLauncher.class, silentLauncher.getClass());
     }
 }

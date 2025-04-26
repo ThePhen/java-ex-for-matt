@@ -1,5 +1,6 @@
 package org.example.jobcontext;
 
+import java.text.ParseException;
 import java.util.Objects;
 
 public class EnvVarJobContext implements JobContext {
@@ -36,7 +37,7 @@ public class EnvVarJobContext implements JobContext {
             if (Objects.nonNull(c)) return Integer.parseInt(c);
             return next.getStartingSequenceNumber();
         } catch (Exception ex) {
-            throw new RuntimeException("Trouble handline the value in env-var EX_START_SEQ_NUM.", ex);
+            throw new Invalid("Trouble handline the value in env-var EX_START_SEQ_NUM.", ex);
         }
     }
 

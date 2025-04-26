@@ -1,35 +1,38 @@
 package org.example.jobcontext;
 
+class IShouldNotHaveBeenCalledException extends RuntimeException {
+}
+
 /**
  * TestAllEnvsPresentJobContext is used to test that all getters are not called. Useful when
  * testing JobContext chains.
  */
 public class DontCallMeJobContext implements JobContext {
-    public boolean thisCtxWasCalled = false;
+    public boolean thisCtxWasCalled;
 
     @Override
     public String getClientName() {
-        throw new RuntimeException("This should not have been called.");
+        throw new IShouldNotHaveBeenCalledException();
     }
 
     @Override
     public String getProjectName() {
-        throw new RuntimeException("This should not have been called.");
+        throw new IShouldNotHaveBeenCalledException();
     }
 
     @Override
     public int getStartingSequenceNumber() {
-        throw new RuntimeException("This should not have been called.");
+        throw new IShouldNotHaveBeenCalledException();
     }
 
     @Override
     public String getUserHomePath() {
-        throw new RuntimeException("This should not have been called.");
+        throw new IShouldNotHaveBeenCalledException();
     }
 
     @Override
     public boolean isRunningSilent() {
-        throw new RuntimeException("This should not have been called.");
+        throw new IShouldNotHaveBeenCalledException();
     }
 
     @Override

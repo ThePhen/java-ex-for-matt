@@ -14,12 +14,12 @@ public class HeadlessLauncher implements Launcher {
     }
 
     private boolean isNullOrEmpty(String s) {
-        return (s == null || s.trim().isEmpty());
+        return (null == s || s.trim().isEmpty());
     }
 
     public void start() throws IOException {
         validateNeededInputArgs();
-        final JobProcessor runner = new JobProcessor(parentContext);
+        JobProcessor runner = new JobProcessor(parentContext);
         runner.startProcessing();
     }
 
