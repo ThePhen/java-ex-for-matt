@@ -1,7 +1,6 @@
 package org.example.launcher;
 
 import org.example.JobProcessor;
-import org.example.jobcontext.CmdArgsJobContext;
 import org.example.jobcontext.JobContext;
 import org.example.util.ExceptionUtils;
 
@@ -9,33 +8,30 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
 
 public class GuiAppLauncher implements Launcher {
-    private final JobContext jobContext;
-    private int argsStartSeqNum;
-    private String argsProjectName;
-    private String argsClientName;
+    private final GuiJobContext guiJobContext;
+    private final JobContext parentJobContext;
     private Frame frame;
     private TextField projectTextField;
     private TextField startSequenceNumTextField;
-    private Choice choiceList;
     private TextArea outputTextArea;
     private TextField clientTextField;
 
-    public GuiAppLauncher(String[] args) {
-        jobContext = new GuiJobContext(args);
+    public GuiAppLauncher(JobContext next) {
+        parentJobContext = next;
+        guiJobContext = new GuiJobContext(next);
     }
 
     private void buildAndStartTheGui() {
         frame = new Frame("Label and TextField Example");
 
-        clientTextField = makeNewTextField("Client: ", argsClientName);
-        projectTextField = makeNewTextField("Project: ", argsProjectName);
-        startSequenceNumTextField = makeNewTextField("Start Sequence Num: ", "" + argsStartSeqNum);
-        makeTheExtraFieldDropdownExample();
+        clientTextField = makeNewTextField("Client: ",
+                parentJobContext.getClientName());
+        projectTextField = makeNewTextField("Project: ",
+                parentJobContext.getProjectName());
+        startSequenceNumTextField = makeNewTextField("Start Sequence Num: ", "" +
+                parentJobContext.getStartingSequenceNumber());
         makeTheStartButton();
         makeTheOutputTextarea();
 
@@ -51,12 +47,12 @@ public class GuiAppLauncher implements Launcher {
     }
 
     private void guiCentricErrorHandler(Exception e) {
-        System.err.println("Unhandled Exception at startTheGui:\n" + e);
-        e.printStackTrace();
-
         String trace = ExceptionUtils.getStackTraceAsString(e);
-        jobContext.logProgress("Unhandled Exception at startTheGui:\n");
-        jobContext.logProgress(trace);
+        guiJobContext.logProgress("Unhandled Exception at startTheGui:\n");
+        guiJobContext.logProgress(trace);
+
+        System.err.println("Unhandled Exception at startTheGui:" +
+                "\n" + e + "\n" + trace + "\n");
 
         JOptionPane.showMessageDialog(frame, e.getMessage() +
                 "\n\n" + trace, "Oh, My.", JOptionPane.ERROR_MESSAGE);
@@ -82,17 +78,6 @@ public class GuiAppLauncher implements Launcher {
         return newComponent;
     }
 
-    private void makeTheExtraFieldDropdownExample() {
-        Label dropdownLabel = new Label("Extra Parameter: ");
-        frame.add(dropdownLabel);
-        String[] projectsForClientAry = {"Item 1", "Item 2", "Item 3", "Item 4", "Item 5"};
-        java.util.List<String> projects = new ArrayList<>(Arrays.asList(projectsForClientAry));
-        choiceList = new Choice();
-        projects.forEach(choiceList::add); // syntax A
-        for (String s : projectsForClientAry) choiceList.add(s); // syntax B
-        frame.add(choiceList);
-    }
-
     private void makeTheOutputTextarea() {
         outputTextArea = new TextArea("Output to appear here.\n");
         outputTextArea.setEditable(false);
@@ -100,24 +85,15 @@ public class GuiAppLauncher implements Launcher {
     }
 
     private void makeTheStartButton() {
-        Button startProcess = new Button("Start Processing");
-        startProcess.addActionListener(e -> {
-            outputTimestamp();
-            if (jobContext.areInputsGood()) {
-                try {
-                    new JobProcessor(jobContext).startProcessing();
-                } catch (Exception ex) {
-                    guiCentricErrorHandler(new RuntimeException("Unhandled error during processing.", ex));
-                }
+        Button startProcessBtn = new Button("Start Processing");
+        startProcessBtn.addActionListener(e -> {
+            try {
+                new JobProcessor(guiJobContext).startProcessing();
+            } catch (Exception ex) {
+                guiCentricErrorHandler(new RuntimeException("Unhandled error during processing.", ex));
             }
-            outputTimestamp();
-            outputTextArea.append("\n");
         });
-        frame.add(startProcess);
-    }
-
-    private void outputTimestamp() {
-        outputTextArea.append("\n=== " + LocalDateTime.now() + " ===");
+        frame.add(startProcessBtn);
     }
 
     public void start() {
@@ -128,28 +104,29 @@ public class GuiAppLauncher implements Launcher {
         }
     }
 
-    private class GuiJobContext extends CmdArgsJobContext {
-        public GuiJobContext(String[] args) {
-            super(args);
-            argsClientName = super.getClientName();
-            argsProjectName = super.getProjectName();
-            argsStartSeqNum = super.getStartingSequenceNumber();
+    private class GuiJobContext implements JobContext {
+        final JobContext next;
+
+        public GuiJobContext(JobContext next) {
+            this.next = next;
         }
 
-        @Override
         public String getClientName() {
-            return clientTextField.getText();
+            if (isNullOrEmpty(clientTextField.getText())) return next.getClientName();
+            return clientTextField.getText().trim();
         }
 
-        @Override
         public String getProjectName() {
-            return projectTextField.getText();
+            final String s = projectTextField.getText();
+            if (isNullOrEmpty(s)) return next.getProjectName();
+            return s.trim();
         }
 
-        @Override
         public int getStartingSequenceNumber() {
+            final String fieldText = startSequenceNumTextField.getText();
+            if (isNullOrEmpty(fieldText)) return next.getStartingSequenceNumber();
             try {
-                return Integer.parseInt(startSequenceNumTextField.getText());
+                return Integer.parseInt(fieldText);
             } catch (NumberFormatException e) {
                 logProgress("\nThe Starting Sequence Number must be blank " +
                         "or a number greater than zero. Job will default to 1.");
@@ -157,7 +134,14 @@ public class GuiAppLauncher implements Launcher {
             }
         }
 
-        @Override
+        public String getUserHomePath() {
+            return next.getUserHomePath();
+        }
+
+        public boolean isRunningSilent() {
+            return next.isRunningSilent();
+        }
+
         public void logProgress(String message) {
             outputTextArea.append("\n" + message);
         }

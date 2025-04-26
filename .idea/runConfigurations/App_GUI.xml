@@ -1,7 +1,7 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="App GUI" type="Application" factoryName="Application">
     <envs>
-      <env name="SETTINGS_HOME" value="./example_home_files" />
+      <env name="EX_USER_HOME" value="./example_home_files" />
     </envs>
     <option name="MAIN_CLASS_NAME" value="org.example.App" />
     <module name="java-ex-for-matt" />
