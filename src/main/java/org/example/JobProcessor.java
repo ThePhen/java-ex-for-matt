@@ -2,6 +2,7 @@ package org.example;
 
 import org.example.jobcontext.JobContext;
 import org.example.util.ProjectRootFactory;
+import org.example.util.StringUtils;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -21,9 +22,9 @@ public class JobProcessor {
 
     private boolean areInputsGood() {
         //run both checks — side-stepping short-circuit eval
-        boolean a = isClientNameGood();
-        boolean b = isProjectNameGood();
-        return a && b;
+        boolean check1 = isClientNameGood();
+        boolean check2 = isProjectNameGood();
+        return check1 && check2;
     }
 
     private File getJobProjectRootDir() throws IOException {
@@ -41,15 +42,17 @@ public class JobProcessor {
     }
 
     private boolean isClientNameGood() {
-        return nameCheck("Client Name", ctx.getClientName());
+        return isNameGood("Client Name", ctx.getClientName());
     }
 
-    private boolean isNullOrEmpty(String s) {
-        return (null == s || s.trim().isEmpty());
+    private boolean isNameGood(String nameTitle, String nameVal) {
+        boolean isBad = StringUtils.isNullOrEmpty(nameVal);
+        if (isBad) ctx.logProgress("\nThe " + nameTitle + " must not be blank.");
+        return !isBad;
     }
 
     private boolean isProjectNameGood() {
-        return nameCheck("Project Name", ctx.getProjectName());
+        return isNameGood("Project Name", ctx.getProjectName());
     }
 
     private String makePreRunSummaryMessage() throws IOException {
@@ -62,12 +65,6 @@ public class JobProcessor {
                 "\nStarting at (if any): " + ctx.getStartingSequenceNumber() +
                 "\nNum records found: " + numInputFiles +
                 "\nNum records to process: " + numToProcess;
-    }
-
-    private boolean nameCheck(String nameTitle, String nameVal) {
-        boolean isBad = isNullOrEmpty(nameVal);
-        if (isBad) ctx.logProgress("\nThe " + nameTitle + " must not be blank.");
-        return !isBad;
     }
 
     @SuppressWarnings("DataFlowIssue")

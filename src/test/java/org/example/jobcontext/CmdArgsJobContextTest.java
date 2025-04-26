@@ -9,7 +9,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class CmdArgsJobContextTest {
 
     /**
-     * testHeppyPath checks that when provided sufficient input commmandline args,
+     * testHeppyPath checks that when provided sufficient input commandline args,
      * that CmdArgsJobContext does not delegate to its parent context. Note that logProgress,
      * on the other hand, is meant to use delegation, however.
      *

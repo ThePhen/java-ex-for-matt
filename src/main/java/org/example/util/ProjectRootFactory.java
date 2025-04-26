@@ -1,14 +1,5 @@
 package org.example.util;
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -22,10 +13,10 @@ public enum ProjectRootFactory {
 
     /**
      * parseTheSettingsFile reads the SETTINGS.txt file, and returns a handle to the location
-     * of the overrids dir, where override XML files are held.
+     * of the overrides dir, where override XML files are held.
      *
      * @param userHome the location of the user's home
-     * @return the location of the dir holding the overides XML file
+     * @return the location of the dir holding the overrides XML file
      * @throws IOException
      */
     static File parseTheSettingsFile(File userHome) throws IOException {
@@ -60,48 +51,6 @@ public enum ProjectRootFactory {
     }
 
     /**
-     * getProjectsRootDirFromOverrides follows information stored in a runtime configuration-related XML file to
-     * determine where the final location of the 'projects root'.
-     *
-     * @param overrideDir the location of the directory where the XML file that points to the 'projects root' is at
-     * @return the final location of the 'projects root', as configured
-     */
-    private static File getProjectsRootDirFromOverrides(File overrideDir) {
-        try {
-            File xmlFile = getOverrideXmlFile(overrideDir);
-            Document doc = parseXmlFileIntoDom(xmlFile);
-
-            String body = getBodyOfFirstMatchingNode(doc, "ProjectRoot");
-            File out = new File(body);
-            if (null != out) {
-                return out;
-            }
-            throw new IllegalStateException("Can not determine the Project Root " +
-                    "from the '" + xmlFile + "' file.");
-        } catch (ParserConfigurationException | SAXException | IOException ex) {
-            throw new RuntimeException(ex);
-        }
-    }
-
-    private static String getBodyOfFirstMatchingNode(Document doc, String tagname) {
-        NodeList nodeList = doc.getElementsByTagName(tagname);
-        if (0 < nodeList.getLength()) {
-            Node element = nodeList.item(0);
-            String body = element.getTextContent().trim();
-            return body;
-        }
-        return null;
-    }
-
-    private static Document parseXmlFileIntoDom(File xmlFile) throws ParserConfigurationException, SAXException, IOException {
-        DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-        Document doc = dBuilder.parse(xmlFile);
-        doc.getDocumentElement().normalize();
-        return doc;
-    }
-
-    /**
      * deriveProjectsRootDir follows a set of files, starting in the user's home, to find out where
      * the 'projects root' is at (i.e. where the Client and Project Input files should be found).
      *
@@ -111,9 +60,10 @@ public enum ProjectRootFactory {
     public static File deriveProjectsRootDir(String homePath) {
         try {
             File homeDir = getReadableFile(homePath);
-            File localConfigOverrideFile = parseTheSettingsFile(homeDir);
-            File projectsRootDirFromOverrides = getProjectsRootDirFromOverrides(localConfigOverrideFile);
-            return new File(homeDir, projectsRootDirFromOverrides.getPath());
+            File overrideFile = parseTheSettingsFile(homeDir);
+            File xmlFile = getOverrideXmlFile(overrideFile);
+            File dirFromOverrides = XmlUtils.getProjectsRootDirFromOverrides(xmlFile);
+            return new File(homeDir, dirFromOverrides.getPath());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

@@ -24,10 +24,10 @@ class ProjectRootFactoryTest {
 
     @Test
     void getReadableFileHappy() throws FileNotFoundException {
-        String testGoodHomeAbsolutePath = testHome.getAbsolutePath();
+        String testGoodHomePath = testHome.getPath();
 
-        File expected = new File(testGoodHomeAbsolutePath);
-        File actual = ProjectRootFactory.getReadableFile(testGoodHomeAbsolutePath);
+        File expected = new File(testGoodHomePath);
+        File actual = ProjectRootFactory.getReadableFile(testGoodHomePath);
         assertEquals(expected, actual);
     }
 
@@ -43,7 +43,7 @@ class ProjectRootFactoryTest {
      */
     @BeforeEach
     void setUpTestResourceRoot() {
-        testHome = new TestHelpers().getTestHomeDir();
+        testHome = TestHelpers.getTestHomeDir();
     }
 
     @Test
